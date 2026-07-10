@@ -1,59 +1,17 @@
-# Frontend
+# SurtiVentas — Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.32.
+Interfaz web de SurtiVentas: lo que ve cada rol al entrar a la plataforma, desde el vendedor que arma un pedido en la calle hasta el gerente que revisa sus indicadores del día.
 
-## Development server
+## Cómo está pensado
 
-To start a local development server, run:
+La aplicación no es una sola pantalla genérica: cada rol tiene su propia vista, con solo la información y las acciones que le corresponden. Un vendedor no ve lo mismo que un facturador, y un bodeguero no puede entrar a pantallas de administración. Eso se resuelve con rutas protegidas: al iniciar sesión, la aplicación sabe quién eres y a dónde puedes entrar.
 
-```bash
-ng serve
-```
+Todo vive dentro de un mismo "armazón" (sidebar de navegación + barra superior) que se mantiene fijo mientras el contenido central cambia según la sección — así cada rol siente que tiene su propia herramienta, aunque todos comparten la misma base visual.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Identidad visual
 
-## Code scaffolding
+SurtiVentas tiene un lenguaje visual propio, pensado para uso en bodega y en campo: azul corporativo profundo como color de marca, ámbar cálido para las acciones importantes, tipografía Manrope, tarjetas con bordes suaves y densidad cómoda para pantallas táctiles. La idea es que se sienta como una herramienta de trabajo seria, no como un panel de administración genérico.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Qué hay hoy
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Por ahora la interfaz cubre el ingreso a la plataforma (inicio de sesión) y el armazón general de navegación que recibirá los módulos de cada rol. A medida que se construyan los módulos de negocio (catálogo, pedidos, bodega, rutas, facturación, portal del comprador), cada uno se integra dentro de esa misma estructura.
