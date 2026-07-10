@@ -1,0 +1,10 @@
+<div class="placeholder">
+  <h1>Bienvenido, {{ authService.currentUser()?.fullName }}</h1>
+  <p>
+    Rol actual: <strong>{{ authService.currentUser()?.role }}</strong>
+  </p>
+  <p class="hint">
+    Este es el punto de anclaje para los dashboards por rol (Gerente, Vendedor, Bodeguero,
+    Conductor, Facturador, Comprador), que se construyen en sesiones posteriores.
+  </p>
+</div>

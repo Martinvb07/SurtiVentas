@@ -1,0 +1,27 @@
+<div class="sidebar">
+  <div class="brand">
+    <div class="brand-mark">SV</div>
+    <div>
+      <div class="brand-name">SurtiVentas</div>
+      <div class="brand-sub">DISTRIBUCIÓN</div>
+    </div>
+  </div>
+
+  <div class="nav-group-label">GESTIÓN</div>
+  <nav class="nav-group">
+    <a class="nav-item active">
+      <span class="dot"></span>
+      Panel general
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="avatar">
+      {{ (authService.currentUser()?.fullName ?? '??') | slice: 0 : 2 }}
+    </div>
+    <div>
+      <div class="user-name">{{ authService.currentUser()?.fullName }}</div>
+      <div class="user-role">{{ authService.currentUser()?.role }}</div>
+    </div>
+  </div>
+</div>

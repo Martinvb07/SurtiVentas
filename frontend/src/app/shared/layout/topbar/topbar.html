@@ -1,0 +1,24 @@
+<div class="topbar">
+  <div class="title">
+    <div class="page-title">Panel general</div>
+  </div>
+
+  <div class="spacer"></div>
+
+  <button mat-icon-button class="bell-button" aria-label="Notificaciones">
+    <mat-icon matBadgeColor="warn">notifications</mat-icon>
+  </button>
+
+  <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Cuenta">
+    <div class="avatar">
+      {{ (authService.currentUser()?.fullName ?? '??').slice(0, 2) }}
+    </div>
+  </button>
+
+  <mat-menu #userMenu="matMenu">
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Cerrar sesión</span>
+    </button>
+  </mat-menu>
+</div>

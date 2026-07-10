@@ -1,0 +1,46 @@
+// Design tokens taken verbatim from the approved SurtiVentas mockup
+// (SurtiVentas.dc.html). These are exposed as CSS custom properties for
+// bespoke, non-Material chrome — sidebar, topbar, status chips, the order
+// stepper — where pixel fidelity to the mockup matters more than Material's
+// auto-derived M3 tonal variants (used instead for actual Material
+// components via styles/_theme.scss).
+:root {
+  --sv-navy-900: #14304f;
+  --sv-primary: #1b4a7a;
+  --sv-primary-hover: #163d66;
+  --sv-amber: #e89b2e;
+  --sv-amber-hover: #d98e1f;
+  --sv-amber-ink: #3a2a08;
+
+  --sv-bg: #f5f6f8;
+  --sv-surface: #ffffff;
+  --sv-ink: #1c2733;
+  --sv-text-secondary: #5b6b7b;
+  --sv-text-muted: #8794a3;
+
+  --sv-border: #e2e7ed;
+  --sv-border-strong: #d8dee6;
+
+  --sv-success: #2f9e68;
+  --sv-success-bg: #e4f3ec;
+  --sv-warning: #d97e2b;
+  --sv-warning-bg: #fbf0dc;
+  --sv-warning-ink: #b26a12;
+  --sv-danger: #c4483a;
+  --sv-danger-bg: #f9e8e6;
+
+  --sv-radius-md: 10px;
+  --sv-radius-lg: 12px;
+
+  --sv-sidebar-text: #b9c9d9;
+  --sv-sidebar-text-muted: #7e96ae;
+  --sv-sidebar-active-bg: rgba(232, 155, 46, 0.16);
+  --sv-sidebar-active-text: #f3c376;
+  --sv-sidebar-hover-bg: rgba(255, 255, 255, 0.06);
+}
+
+// Utility for currency/quantity figures — always tabular, per the mockup's
+// design-system reference screen.
+.numeric {
+  font-variant-numeric: tabular-nums;
+}

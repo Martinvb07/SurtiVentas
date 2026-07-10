@@ -1,0 +1,14 @@
+CREATE TABLE users (
+    id            BIGINT AUTO_INCREMENT PRIMARY KEY,
+    email         VARCHAR(150) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    full_name     VARCHAR(150) NOT NULL,
+    role          VARCHAR(30)  NOT NULL,
+    active        BOOLEAN      NOT NULL DEFAULT TRUE,
+    created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT uk_users_email UNIQUE (email),
+    CONSTRAINT chk_users_role CHECK (role IN (
+        'ADMINISTRADOR', 'VENDEDOR', 'BODEGUERO', 'CONDUCTOR', 'FACTURADOR', 'COMPRADOR'
+    ))
+) ENGINE = InnoDB;

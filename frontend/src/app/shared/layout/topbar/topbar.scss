@@ -1,0 +1,36 @@
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--sv-surface);
+  border-bottom: 1px solid var(--sv-border);
+  padding: 14px 28px;
+}
+
+.page-title {
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--sv-ink);
+}
+
+.spacer {
+  flex: 1;
+}
+
+.bell-button {
+  color: var(--sv-text-secondary);
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--sv-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 12px;
+  text-transform: uppercase;
+}

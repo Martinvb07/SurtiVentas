@@ -1,0 +1,28 @@
+# Backend (Maven / Java)
+backend/target/
+*.class
+*.jar
+!backend/.mvn/wrapper/maven-wrapper.jar
+HELP.md
+
+# Frontend (Angular / Node)
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/npm-debug.log*
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# Claude Code harness state (not part of the project)
+.claude/
+
+# Env
+.env
+*.env.local
+
+# Logs
+*.log

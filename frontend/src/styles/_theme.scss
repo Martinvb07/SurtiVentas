@@ -1,0 +1,29 @@
+// SurtiVentas Angular Material theme.
+//
+// Color palettes in _theme-colors.scss were generated with
+// `ng generate @angular/material:m3-theme --primary-color=#1B4A7A
+// --tertiary-color=#E89B2E` — a real M3 tonal palette derived from the
+// mockup's brand colors (HCT color space), not a prebuilt Material palette.
+// Manrope replaces the M3 default (Roboto) to match the mockup typography.
+// Density 0 (M3's most spacious setting) matches the mockup's "comfortable,
+// tactile" density intended for field use on mobile devices.
+@use '@angular/material' as mat;
+@use './theme-colors' as theme-colors;
+
+html {
+  @include mat.theme((
+    color: (
+      theme-type: light,
+      primary: theme-colors.$primary-palette,
+      tertiary: theme-colors.$tertiary-palette,
+    ),
+    typography: (
+      plain-family: 'Manrope',
+      brand-family: 'Manrope',
+      bold-weight: 800,
+      medium-weight: 600,
+      regular-weight: 400,
+    ),
+    density: 0,
+  ));
+}
