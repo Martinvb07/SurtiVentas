@@ -159,58 +159,6 @@ SurtiVentas/
 
 ---
 
-## ▶️ Cómo levantar el proyecto
-
-### Con Docker Compose (recomendado)
-
-```bash
-cp .env.example .env
-# edita .env si quieres cambiar credenciales/secretos
-docker compose up --build
-```
-
-- Frontend: http://localhost
-- Backend / Swagger UI: http://localhost:8080/swagger-ui.html
-- MySQL: localhost:3307 (mapped off 3306 to avoid clashing with a local MySQL install)
-
-**Usuario administrador sembrado** (migración `V5`, credencial de demo intencionalmente pública — no protege nada sensible, es solo el punto de entrada inicial): correo `admin@surtiventas.com`, clave `Admin123!`.
-
-Solo un `ADMINISTRADOR` puede registrar usuarios nuevos (`POST /api/auth/register`), así que este es el punto de entrada para crear el resto de usuarios de prueba (vendedor, bodeguero, conductor, facturador, comprador).
-
-### Desarrollo local sin Docker
-
-**Backend** (requiere JDK 21, un MySQL local escuchando en el puerto configurado en `DB_URL`, y el wrapper de Maven no requiere Maven instalado). El perfil `dev` no trae contraseñas por defecto — expórtalas desde tu shell antes de levantar:
-
-```bash
-cd backend
-export DB_PASSWORD=tu_password_local
-export JWT_SECRET=cualquier_cadena_larga_y_aleatoria
-./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
-```
-
-**Frontend**:
-
-```bash
-cd frontend
-npm install
-npm start
-```
-
-### Tests
-
-```bash
-cd backend && ./mvnw test
-cd frontend && npm test -- --watch=false --browsers=ChromeHeadless
-```
-
----
-
-## 🌿 Flujo de Git
-
-Trunk-based, ligero: `main` siempre desplegable. Ramas de vida corta `feat/<scope>`, `fix/<scope>`, `chore/<scope>`, `docs/<scope>` fusionadas tras CI en verde. Mensajes de commit siguen [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `test:`, `ci:`).
-
----
-
 <div align="center">
 
 Hecho con ☕ para modernizar la distribución mayorista
