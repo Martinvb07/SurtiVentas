@@ -1,0 +1,8 @@
+CREATE TABLE unit_of_measure (
+    id           BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name         VARCHAR(60) NOT NULL,
+    abbreviation VARCHAR(10) NOT NULL,
+    created_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT uk_unit_of_measure_name UNIQUE (name)
+) ENGINE = InnoDB;
