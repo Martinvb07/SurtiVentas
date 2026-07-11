@@ -1,27 +1,99 @@
-<div class="sidebar">
+<div class="sidebar" [class.collapsed]="collapsed()">
   <div class="brand">
     <div class="brand-mark">SV</div>
-    <div>
-      <div class="brand-name">SurtiVentas</div>
-      <div class="brand-sub">DISTRIBUCIÓN</div>
-    </div>
+    @if (!collapsed()) {
+      <div class="brand-text">
+        <div class="brand-name">SurtiVentas</div>
+        <div class="brand-sub">DISTRIBUCIÓN</div>
+      </div>
+    }
   </div>
 
-  <div class="nav-group-label">GESTIÓN</div>
-  <nav class="nav-group">
-    <a class="nav-item active">
-      <span class="dot"></span>
-      Panel general
-    </a>
+  <nav class="nav">
+    @for (section of sections(); track section.label) {
+      @if (!collapsed()) {
+        <div class="section-label">{{ section.label }}</div>
+      } @else {
+        <div class="section-divider"></div>
+      }
+
+      @for (entry of section.entries; track entry.label) {
+        @if (isGroup(entry)) {
+          <div class="nav-group">
+            <button
+              type="button"
+              class="nav-item group-toggle"
+              [class.active]="isGroupActive(entry)"
+              [matTooltip]="collapsed() ? entry.label : ''"
+              matTooltipPosition="right"
+              (click)="toggleGroup(entry.label)"
+            >
+              <mat-icon class="nav-icon">{{ entry.icon }}</mat-icon>
+              @if (!collapsed()) {
+                <span class="nav-label">{{ entry.label }}</span>
+                <mat-icon class="chevron" [class.open]="isGroupOpen(entry.label)">expand_more</mat-icon>
+              }
+            </button>
+
+            @if (!collapsed()) {
+              <div class="group-items" [class.open]="isGroupOpen(entry.label)">
+                <div class="group-items-inner">
+                  @for (item of entry.items; track item.route) {
+                    <a
+                      class="nav-item indent"
+                      [routerLink]="item.route"
+                      routerLinkActive="active"
+                      [routerLinkActiveOptions]="{ exact: item.route === '/app' }"
+                    >
+                      <mat-icon class="nav-icon small">{{ item.icon }}</mat-icon>
+                      <span class="nav-label">{{ item.label }}</span>
+                    </a>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <a
+            class="nav-item"
+            [routerLink]="entry.route"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: entry.route === '/app' }"
+            [matTooltip]="collapsed() ? entry.label : ''"
+            matTooltipPosition="right"
+          >
+            <mat-icon class="nav-icon">{{ entry.icon }}</mat-icon>
+            @if (!collapsed()) {
+              <span class="nav-label">{{ entry.label }}</span>
+            }
+          </a>
+        }
+      }
+    }
   </nav>
 
   <div class="sidebar-footer">
-    <div class="avatar">
-      {{ (authService.currentUser()?.fullName ?? '??') | slice: 0 : 2 }}
-    </div>
-    <div>
-      <div class="user-name">{{ authService.currentUser()?.fullName }}</div>
-      <div class="user-role">{{ authService.currentUser()?.role }}</div>
-    </div>
+    @if (!collapsed()) {
+      <div class="user-row">
+        <div class="avatar">{{ (authService.currentUser()?.fullName ?? '??') | slice: 0 : 2 }}</div>
+        <div class="user-info">
+          <div class="user-name">{{ authService.currentUser()?.fullName }}</div>
+          <div class="user-role">{{ authService.currentUser()?.role }}</div>
+        </div>
+      </div>
+    }
+
+    <button
+      type="button"
+      class="nav-item collapse-toggle"
+      [matTooltip]="collapsed() ? 'Expandir' : ''"
+      matTooltipPosition="right"
+      (click)="toggleCollapsed()"
+    >
+      <mat-icon class="nav-icon">{{ collapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+      @if (!collapsed()) {
+        <span class="nav-label">Contraer</span>
+      }
+    </button>
   </div>
 </div>

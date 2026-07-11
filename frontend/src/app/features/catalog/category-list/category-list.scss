@@ -1,0 +1,40 @@
+.lookup-page {
+  padding: 24px 28px;
+  max-width: 720px;
+
+  h1 {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0 0 16px;
+    color: var(--sv-ink);
+  }
+}
+
+.inline-form {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+
+  mat-form-field {
+    flex: 1;
+  }
+}
+
+.add-button {
+  margin-top: 8px;
+  background: var(--sv-amber) !important;
+  color: var(--sv-amber-ink) !important;
+  font-weight: 700;
+}
+
+.table-wrapper {
+  background: var(--sv-surface);
+  border: 1px solid var(--sv-border);
+  border-radius: var(--sv-radius-lg);
+  overflow: hidden;
+
+  table {
+    width: 100%;
+  }
+}

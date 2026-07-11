@@ -1,0 +1,44 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 360px;
+}
+
+.current-stock,
+.resulting-stock {
+  font-size: 13px;
+  color: var(--sv-text-secondary);
+
+  strong {
+    color: var(--sv-ink);
+  }
+}
+
+.resulting-stock.negative strong {
+  color: var(--sv-danger);
+}
+
+.direction-toggle {
+  width: 100%;
+
+  ::ng-deep .mat-button-toggle {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+.error-banner {
+  background: var(--sv-danger-bg);
+  color: var(--sv-danger);
+  border-radius: var(--sv-radius-md);
+  padding: 10px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.submit-button {
+  background: var(--sv-amber) !important;
+  color: var(--sv-amber-ink) !important;
+  font-weight: 700;
+}

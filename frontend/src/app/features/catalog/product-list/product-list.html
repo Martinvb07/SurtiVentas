@@ -1,0 +1,120 @@
+<div class="product-list-page">
+  <div class="header">
+    <div>
+      <h1>Productos</h1>
+      <p class="subtitle">{{ totalElements() }} producto(s) activo(s)</p>
+    </div>
+    @if (canManageCatalog()) {
+      <button mat-flat-button class="new-button" (click)="openCreateDialog()">
+        <mat-icon>add</mat-icon>
+        Nuevo producto
+      </button>
+    }
+  </div>
+
+  <div class="filters">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Buscar por nombre o SKU</mat-label>
+      <input matInput [formControl]="searchControl" />
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="category-field">
+      <mat-label>Categoría</mat-label>
+      <mat-select [value]="categoryId()" (selectionChange)="onCategoryChange($event.value)">
+        <mat-option [value]="null">Todas</mat-option>
+        @for (category of categories(); track category.id) {
+          <mat-option [value]="category.id">{{ category.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-checkbox [checked]="lowStockOnly()" (change)="onLowStockChange($event.checked)">
+      Solo stock bajo
+    </mat-checkbox>
+  </div>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="products()">
+      <ng-container matColumnDef="sku">
+        <th mat-header-cell *matHeaderCellDef>SKU</th>
+        <td mat-cell *matCellDef="let p" class="numeric">{{ p.sku }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Nombre</th>
+        <td mat-cell *matCellDef="let p">{{ p.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef>Categoría</th>
+        <td mat-cell *matCellDef="let p">{{ p.category.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef>Precio</th>
+        <td mat-cell *matCellDef="let p" class="numeric">{{ p.price | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="stock">
+        <th mat-header-cell *matHeaderCellDef>Stock</th>
+        <td mat-cell *matCellDef="let p">
+          <span class="stock-chip" [class.low]="p.lowStock">{{ p.stock }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="unit">
+        <th mat-header-cell *matHeaderCellDef>Unidad</th>
+        <td mat-cell *matCellDef="let p">{{ p.unitOfMeasure.abbreviation }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let p">
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Acciones">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            @if (canManageCatalog()) {
+              <button mat-menu-item (click)="openEditDialog(p)">
+                <mat-icon>edit</mat-icon>
+                <span>Editar</span>
+              </button>
+            }
+            @if (canAdjustStock()) {
+              <button mat-menu-item (click)="openStockDialog(p)">
+                <mat-icon>inventory</mat-icon>
+                <span>Ajustar stock</span>
+              </button>
+            }
+            @if (canManageCatalog()) {
+              <button mat-menu-item (click)="deactivate(p)">
+                <mat-icon>block</mat-icon>
+                <span>Desactivar</span>
+              </button>
+            }
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    @if (!loading() && products().length === 0) {
+      <div class="empty-state">No hay productos que coincidan con los filtros.</div>
+    }
+  </div>
+
+  <mat-paginator
+    [length]="totalElements()"
+    [pageIndex]="pageIndex()"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="[10, 20, 50]"
+    (page)="onPage($event)"
+  />
+</div>

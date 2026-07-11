@@ -1,0 +1,31 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 440px;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+
+  mat-form-field {
+    flex: 1;
+  }
+}
+
+.error-banner {
+  background: var(--sv-danger-bg);
+  color: var(--sv-danger);
+  border-radius: var(--sv-radius-md);
+  padding: 10px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.submit-button {
+  background: var(--sv-amber) !important;
+  color: var(--sv-amber-ink) !important;
+  font-weight: 700;
+}

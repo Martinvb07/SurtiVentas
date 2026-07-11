@@ -1,0 +1,76 @@
+<h2 mat-dialog-title>{{ isEdit() ? 'Editar producto' : 'Nuevo producto' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <mat-dialog-content class="content">
+    @if (errorMessage()) {
+      <div class="error-banner">{{ errorMessage() }}</div>
+    }
+
+    <mat-form-field appearance="outline">
+      <mat-label>SKU</mat-label>
+      <input matInput formControlName="sku" [readonly]="isEdit()" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Nombre</mat-label>
+      <input matInput formControlName="name" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Descripción</mat-label>
+      <textarea matInput formControlName="description" rows="2"></textarea>
+    </mat-form-field>
+
+    <div class="row">
+      <mat-form-field appearance="outline">
+        <mat-label>Categoría</mat-label>
+        <mat-select formControlName="categoryId">
+          @for (category of data.categories; track category.id) {
+            <mat-option [value]="category.id">{{ category.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Unidad de medida</mat-label>
+        <mat-select formControlName="unitOfMeasureId">
+          @for (unit of units(); track unit.id) {
+            <mat-option [value]="unit.id">{{ unit.name }} ({{ unit.abbreviation }})</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="row">
+      <mat-form-field appearance="outline">
+        <mat-label>Precio</mat-label>
+        <input matInput type="number" formControlName="price" min="0" />
+      </mat-form-field>
+
+      @if (!isEdit()) {
+        <mat-form-field appearance="outline">
+          <mat-label>Stock inicial</mat-label>
+          <input matInput type="number" formControlName="initialStock" min="0" />
+        </mat-form-field>
+      }
+
+      <mat-form-field appearance="outline">
+        <mat-label>Stock mínimo</mat-label>
+        <input matInput type="number" formControlName="minStock" min="0" />
+      </mat-form-field>
+    </div>
+
+    <mat-checkbox formControlName="batchTracked">Maneja lotes y fecha de vencimiento</mat-checkbox>
+
+    @if (isEdit()) {
+      <mat-checkbox formControlName="active">Activo</mat-checkbox>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close [disabled]="saving()">Cancelar</button>
+    <button mat-flat-button type="submit" class="submit-button" [disabled]="saving()">
+      {{ isEdit() ? 'Guardar cambios' : 'Crear producto' }}
+    </button>
+  </mat-dialog-actions>
+</form>
