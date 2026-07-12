@@ -20,6 +20,10 @@ export const routes: Routes = [
         path: 'catalog',
         loadChildren: () => import('./features/catalog/catalog.routes').then((m) => m.CATALOG_ROUTES),
       },
+      {
+        path: 'customers',
+        loadChildren: () => import('./features/customers/customers.routes').then((m) => m.CUSTOMERS_ROUTES),
+      },
     ],
   },
   { path: '**', redirectTo: 'login' },

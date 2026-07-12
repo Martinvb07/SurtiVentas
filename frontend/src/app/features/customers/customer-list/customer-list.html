@@ -1,0 +1,116 @@
+<div class="customer-list-page">
+  <div class="header">
+    <div>
+      <h1>Clientes</h1>
+      <p class="subtitle">{{ totalElements() }} tienda(s) activa(s)</p>
+    </div>
+    @if (canManageCustomers()) {
+      <button mat-flat-button class="new-button" (click)="openCreateDialog()">
+        <mat-icon>add</mat-icon>
+        Nuevo cliente
+      </button>
+    }
+  </div>
+
+  <div class="filters">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Buscar por tienda o propietario</mat-label>
+      <input matInput [formControl]="searchControl" />
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="classification-field">
+      <mat-label>Clasificación</mat-label>
+      <mat-select [value]="classification()" (selectionChange)="onClassificationChange($event.value)">
+        <mat-option [value]="null">Todas</mat-option>
+        <mat-option value="A">A</mat-option>
+        <mat-option value="B">B</mat-option>
+        <mat-option value="C">C</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="customers()">
+      <ng-container matColumnDef="storeName">
+        <th mat-header-cell *matHeaderCellDef>Tienda</th>
+        <td mat-cell *matCellDef="let c">{{ c.storeName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="ownerName">
+        <th mat-header-cell *matHeaderCellDef>Propietario</th>
+        <td mat-cell *matCellDef="let c">{{ c.ownerName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef>Teléfono</th>
+        <td mat-cell *matCellDef="let c">{{ c.phone || '—' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="classification">
+        <th mat-header-cell *matHeaderCellDef>Clase</th>
+        <td mat-cell *matCellDef="let c">
+          <span class="classification-chip" [class]="'class-' + c.classification">{{ c.classification }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="creditLimit">
+        <th mat-header-cell *matHeaderCellDef>Cupo</th>
+        <td mat-cell *matCellDef="let c" class="numeric">{{ c.creditLimit | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="currentDebt">
+        <th mat-header-cell *matHeaderCellDef>Cartera</th>
+        <td mat-cell *matCellDef="let c">
+          <span class="debt-chip" [class.over]="c.overCreditLimit">
+            {{ c.currentDebt | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let c">
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Acciones">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            @if (canManageCustomers()) {
+              <button mat-menu-item (click)="openEditDialog(c)">
+                <mat-icon>edit</mat-icon>
+                <span>Editar</span>
+              </button>
+            }
+            @if (canAdjustDebt()) {
+              <button mat-menu-item (click)="openDebtDialog(c)">
+                <mat-icon>account_balance_wallet</mat-icon>
+                <span>Ajustar cartera</span>
+              </button>
+            }
+            @if (canManageCustomers()) {
+              <button mat-menu-item (click)="deactivate(c)">
+                <mat-icon>block</mat-icon>
+                <span>Desactivar</span>
+              </button>
+            }
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    @if (!loading() && customers().length === 0) {
+      <div class="empty-state">No hay clientes que coincidan con los filtros.</div>
+    }
+  </div>
+
+  <mat-paginator
+    [length]="totalElements()"
+    [pageIndex]="pageIndex()"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="[10, 20, 50]"
+    (page)="onPage($event)"
+  />
+</div>

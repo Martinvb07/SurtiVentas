@@ -1,0 +1,39 @@
+<h2 mat-dialog-title>Ajustar cartera — {{ data.customer.storeName }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <mat-dialog-content class="content">
+    @if (errorMessage()) {
+      <div class="error-banner">{{ errorMessage() }}</div>
+    }
+
+    <div class="current-debt">
+      Cartera actual: <strong class="numeric">{{ data.customer.currentDebt }}</strong>
+    </div>
+
+    <mat-button-toggle-group [value]="direction()" (change)="direction.set($event.value)" class="direction-toggle">
+      <mat-button-toggle value="charge">Cargo (factura)</mat-button-toggle>
+      <mat-button-toggle value="payment">Abono (pago)</mat-button-toggle>
+    </mat-button-toggle-group>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Monto</mat-label>
+      <input matInput type="number" formControlName="amount" min="1" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Motivo</mat-label>
+      <input matInput formControlName="reason" placeholder="Ej. factura #100, pago parcial" />
+    </mat-form-field>
+
+    <div class="resulting-debt" [class.negative]="resultingDebt < 0">
+      Cartera resultante: <strong class="numeric">{{ resultingDebt }}</strong>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close [disabled]="saving()">Cancelar</button>
+    <button mat-flat-button type="submit" class="submit-button" [disabled]="saving() || resultingDebt < 0">
+      Confirmar
+    </button>
+  </mat-dialog-actions>
+</form>

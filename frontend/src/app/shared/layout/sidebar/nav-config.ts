@@ -35,6 +35,17 @@ export const NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
+    label: 'Comercial',
+    entries: [
+      {
+        label: 'Clientes',
+        icon: 'storefront',
+        route: '/app/customers',
+        roles: [Role.ADMINISTRADOR, Role.VENDEDOR, Role.FACTURADOR],
+      },
+    ],
+  },
+  {
     label: 'Catálogo',
     entries: [
       {

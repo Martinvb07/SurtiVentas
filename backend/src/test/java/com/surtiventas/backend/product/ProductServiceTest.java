@@ -53,7 +53,7 @@ class ProductServiceTest {
     @Test
     void adjustStockIncreasesStockAndRecordsMovement() {
         Product product = sampleProduct(20);
-        when(productRepository.findById(10L)).thenReturn(Optional.of(product));
+        when(productRepository.findWithAssociationsById(10L)).thenReturn(Optional.of(product));
         when(productRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         Product result = productService.adjustStock(10L, 5, "Entrada de mercancia", actingUser);
@@ -64,7 +64,7 @@ class ProductServiceTest {
     @Test
     void adjustStockRejectsResultingNegativeStock() {
         Product product = sampleProduct(3);
-        when(productRepository.findById(10L)).thenReturn(Optional.of(product));
+        when(productRepository.findWithAssociationsById(10L)).thenReturn(Optional.of(product));
 
         assertThatThrownBy(() -> productService.adjustStock(10L, -5, "Ajuste", actingUser))
                 .isInstanceOf(ApiException.class);

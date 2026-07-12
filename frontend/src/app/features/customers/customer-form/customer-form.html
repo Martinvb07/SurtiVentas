@@ -1,0 +1,63 @@
+<h2 mat-dialog-title>{{ isEdit() ? 'Editar cliente' : 'Nuevo cliente' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <mat-dialog-content class="content">
+    @if (errorMessage()) {
+      <div class="error-banner">{{ errorMessage() }}</div>
+    }
+
+    <mat-form-field appearance="outline">
+      <mat-label>Nombre de la tienda</mat-label>
+      <input matInput formControlName="storeName" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Propietario</mat-label>
+      <input matInput formControlName="ownerName" />
+    </mat-form-field>
+
+    <div class="row">
+      <mat-form-field appearance="outline">
+        <mat-label>Teléfono</mat-label>
+        <input matInput formControlName="phone" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Correo (opcional)</mat-label>
+        <input matInput formControlName="email" />
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Dirección</mat-label>
+      <input matInput formControlName="address" />
+    </mat-form-field>
+
+    <div class="row">
+      <mat-form-field appearance="outline">
+        <mat-label>Cupo de crédito</mat-label>
+        <input matInput type="number" formControlName="creditLimit" min="0" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Clasificación</mat-label>
+        <mat-select formControlName="classification">
+          <mat-option value="A">A — mayor volumen</mat-option>
+          <mat-option value="B">B — volumen medio</mat-option>
+          <mat-option value="C">C — volumen bajo</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    @if (isEdit()) {
+      <mat-checkbox formControlName="active">Activo</mat-checkbox>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close [disabled]="saving()">Cancelar</button>
+    <button mat-flat-button type="submit" class="submit-button" [disabled]="saving()">
+      {{ isEdit() ? 'Guardar cambios' : 'Crear cliente' }}
+    </button>
+  </mat-dialog-actions>
+</form>
