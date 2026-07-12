@@ -6,6 +6,16 @@
   max-width: 560px;
 }
 
+.driver-line {
+  font-size: 13px;
+  color: var(--sv-text-secondary);
+  margin: 0;
+
+  strong {
+    color: var(--sv-ink);
+  }
+}
+
 .section-label {
   font-weight: 700;
   font-size: 11px;

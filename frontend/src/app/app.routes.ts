@@ -29,6 +29,10 @@ export const routes: Routes = [
         loadChildren: () => import('./features/orders/orders.routes').then((m) => m.ORDERS_ROUTES),
       },
       {
+        path: 'logistics',
+        loadChildren: () => import('./features/logistics/logistics.routes').then((m) => m.LOGISTICS_ROUTES),
+      },
+      {
         path: 'suppliers',
         loadChildren: () => import('./features/suppliers/suppliers.routes').then((m) => m.SUPPLIERS_ROUTES),
       },

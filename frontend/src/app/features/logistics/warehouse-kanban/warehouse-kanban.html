@@ -1,0 +1,121 @@
+<div class="kanban-page">
+  <div class="header">
+    <h1>Alistamiento</h1>
+    <p class="subtitle">Pedidos aprobados en camino hacia la entrega</p>
+  </div>
+
+  <div class="board">
+    <div class="column">
+      <div class="column-header">
+        <span>Aprobados</span>
+        <span class="count">{{ approved().length }}</span>
+      </div>
+      <div class="cards">
+        @for (order of approved(); track order.id) {
+          <div class="card">
+            <div class="card-title">{{ order.orderNumber }}</div>
+            <div class="card-subtitle">{{ order.customerName }}</div>
+            <div class="card-amount numeric">{{ order.totalAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</div>
+            <button mat-button class="card-action" (click)="startPicking(order)">
+              <mat-icon>play_arrow</mat-icon>
+              Iniciar alistamiento
+            </button>
+          </div>
+        } @empty {
+          <div class="empty-column">Sin pedidos</div>
+        }
+      </div>
+    </div>
+
+    <div class="column">
+      <div class="column-header">
+        <span>En alistamiento</span>
+        <span class="count">{{ picking().length }}</span>
+      </div>
+      <div class="cards">
+        @for (order of picking(); track order.id) {
+          <div class="card">
+            <div class="card-title">{{ order.orderNumber }}</div>
+            <div class="card-subtitle">{{ order.customerName }}</div>
+            <div class="card-amount numeric">{{ order.totalAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</div>
+            <button mat-button class="card-action" (click)="finishPicking(order)">
+              <mat-icon>inventory_2</mat-icon>
+              Marcar alistado
+            </button>
+          </div>
+        } @empty {
+          <div class="empty-column">Sin pedidos</div>
+        }
+      </div>
+    </div>
+
+    <div class="column">
+      <div class="column-header">
+        <span>Alistados</span>
+        <span class="count">{{ packed().length }}</span>
+      </div>
+      <div class="cards">
+        @for (order of packed(); track order.id) {
+          <div class="card">
+            <div class="card-title">{{ order.orderNumber }}</div>
+            <div class="card-subtitle">{{ order.customerName }}</div>
+            <div class="card-amount numeric">{{ order.totalAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</div>
+            <button mat-button class="card-action" (click)="openAssignDriver(order)">
+              <mat-icon>local_shipping</mat-icon>
+              Asignar a ruta
+            </button>
+          </div>
+        } @empty {
+          <div class="empty-column">Sin pedidos</div>
+        }
+      </div>
+    </div>
+
+    <div class="column">
+      <div class="column-header">
+        <span>En ruta</span>
+        <span class="count">{{ dispatched().length }}</span>
+      </div>
+      <div class="cards">
+        @for (order of dispatched(); track order.id) {
+          <div class="card">
+            <div class="card-title">{{ order.orderNumber }}</div>
+            <div class="card-subtitle">{{ order.customerName }}</div>
+            <div class="card-driver">{{ order.assignedDriverName }}</div>
+            <div class="card-amount numeric">{{ order.totalAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</div>
+          </div>
+        } @empty {
+          <div class="empty-column">Sin pedidos</div>
+        }
+      </div>
+    </div>
+
+    <div class="column column-incidents">
+      <div class="column-header">
+        <span>Novedades</span>
+        <span class="count">{{ incidents().length }}</span>
+      </div>
+      <div class="cards">
+        @for (order of incidents(); track order.id) {
+          <div class="card card-incident">
+            <div class="card-title">{{ order.orderNumber }}</div>
+            <div class="card-subtitle">{{ order.customerName }}</div>
+            <div class="card-amount numeric">{{ order.totalAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</div>
+            <button mat-button class="card-action" (click)="openAssignDriver(order)">
+              <mat-icon>replay</mat-icon>
+              Reintentar despacho
+            </button>
+            @if (canCancel()) {
+              <button mat-button class="card-action card-action-danger" (click)="cancelIncident(order)">
+                <mat-icon>block</mat-icon>
+                Cancelar pedido
+              </button>
+            }
+          </div>
+        } @empty {
+          <div class="empty-column">Sin novedades</div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

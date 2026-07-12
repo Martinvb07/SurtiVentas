@@ -1,6 +1,10 @@
 <h2 mat-dialog-title>{{ data.order.orderNumber }} — {{ data.order.customerName }}</h2>
 
 <mat-dialog-content class="content">
+  @if (data.order.assignedDriverName) {
+    <p class="driver-line">Conductor asignado: <strong>{{ data.order.assignedDriverName }}</strong></p>
+  }
+
   <div class="section-label">Líneas del pedido</div>
   <table mat-table [dataSource]="data.order.lines" class="lines-table">
     <ng-container matColumnDef="productName">

@@ -1,0 +1,60 @@
+<div class="deliveries-page">
+  <div class="header">
+    <h1>Mis entregas</h1>
+    <p class="subtitle">{{ orders().length }} pedido(s) asignados a tu ruta</p>
+  </div>
+
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="orders()">
+      <ng-container matColumnDef="orderNumber">
+        <th mat-header-cell *matHeaderCellDef>Pedido</th>
+        <td mat-cell *matCellDef="let o" class="numeric">{{ o.orderNumber }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="customerName">
+        <th mat-header-cell *matHeaderCellDef>Cliente</th>
+        <td mat-cell *matCellDef="let o">{{ o.customerName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="totalAmount">
+        <th mat-header-cell *matHeaderCellDef>Total</th>
+        <td mat-cell *matCellDef="let o" class="numeric">{{ o.totalAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef>Creado</th>
+        <td mat-cell *matCellDef="let o">{{ o.createdAt | date: 'short' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let o">
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Acciones">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="viewDetail(o)">
+              <mat-icon>visibility</mat-icon>
+              <span>Ver detalle</span>
+            </button>
+            <button mat-menu-item (click)="markDelivered(o)">
+              <mat-icon>check_circle</mat-icon>
+              <span>Marcar entregado</span>
+            </button>
+            <button mat-menu-item (click)="reportIncident(o)">
+              <mat-icon>report_problem</mat-icon>
+              <span>Reportar novedad</span>
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    @if (!loading() && orders().length === 0) {
+      <div class="empty-state">No tienes entregas asignadas por el momento.</div>
+    }
+  </div>
+</div>

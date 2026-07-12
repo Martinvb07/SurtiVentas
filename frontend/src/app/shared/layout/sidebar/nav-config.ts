@@ -52,6 +52,23 @@ export const NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
+    label: 'Logística',
+    entries: [
+      {
+        label: 'Alistamiento',
+        icon: 'inventory',
+        route: '/app/logistics/warehouse',
+        roles: [Role.ADMINISTRADOR, Role.BODEGUERO],
+      },
+      {
+        label: 'Mis entregas',
+        icon: 'directions_car',
+        route: '/app/logistics/deliveries',
+        roles: [Role.ADMINISTRADOR, Role.CONDUCTOR],
+      },
+    ],
+  },
+  {
     label: 'Catálogo',
     entries: [
       {

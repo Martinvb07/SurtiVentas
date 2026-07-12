@@ -29,6 +29,8 @@ export interface Order {
   customerName: string;
   status: OrderStatus;
   createdById: number;
+  assignedDriverId: number | null;
+  assignedDriverName: string | null;
   totalAmount: number;
   lines: OrderLine[];
   createdAt: string;
@@ -48,6 +50,7 @@ export interface OrderCreateRequest {
 export interface OrderTransitionRequest {
   targetStatus: OrderStatus;
   note: string | null;
+  driverId?: number | null;
 }
 
 export interface OrderHistoryEntry {

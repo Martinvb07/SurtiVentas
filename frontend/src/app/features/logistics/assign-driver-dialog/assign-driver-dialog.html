@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>Asignar a ruta</h2>
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <mat-dialog-content class="content">
+    @if (errorMessage()) {
+      <div class="error-banner">{{ errorMessage() }}</div>
+    }
+
+    <p class="order-line">
+      Pedido <strong>{{ data.order.orderNumber }}</strong> — {{ data.order.customerName }}
+    </p>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Conductor</mat-label>
+      <mat-select formControlName="driverId">
+        @for (driver of drivers(); track driver.id) {
+          <mat-option [value]="driver.id">{{ driver.fullName }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Nota (opcional)</mat-label>
+      <input matInput formControlName="note" />
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close [disabled]="saving()">Cancelar</button>
+    <button mat-flat-button type="submit" class="submit-button" [disabled]="saving()">Asignar</button>
+  </mat-dialog-actions>
+</form>

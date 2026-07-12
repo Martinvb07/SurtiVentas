@@ -16,6 +16,7 @@ export interface OrderSearchParams {
   size?: number;
   customerId?: number | null;
   status?: OrderStatus | null;
+  assignedDriverId?: number | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -31,6 +32,7 @@ export class OrdersService {
 
     if (params.customerId != null) httpParams = httpParams.set('customerId', params.customerId);
     if (params.status) httpParams = httpParams.set('status', params.status);
+    if (params.assignedDriverId != null) httpParams = httpParams.set('assignedDriverId', params.assignedDriverId);
 
     return this.http.get<Page<Order>>(`${this.baseUrl}/orders`, { params: httpParams });
   }
