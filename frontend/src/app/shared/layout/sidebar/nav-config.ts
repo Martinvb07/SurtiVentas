@@ -73,6 +73,25 @@ export const NAV_SECTIONS: NavSection[] = [
           },
         ],
       },
+      {
+        label: 'Compras',
+        icon: 'local_shipping',
+        roles: [Role.ADMINISTRADOR, Role.BODEGUERO],
+        items: [
+          {
+            label: 'Proveedores',
+            icon: 'storefront',
+            route: '/app/suppliers',
+            roles: [Role.ADMINISTRADOR, Role.BODEGUERO],
+          },
+          {
+            label: 'Órdenes de compra',
+            icon: 'receipt_long',
+            route: '/app/purchase-orders',
+            roles: [Role.ADMINISTRADOR, Role.BODEGUERO],
+          },
+        ],
+      },
     ],
   },
 ];

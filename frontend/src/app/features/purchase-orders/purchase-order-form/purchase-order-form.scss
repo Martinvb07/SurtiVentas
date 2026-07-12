@@ -1,0 +1,83 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 560px;
+  max-width: 640px;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+
+  mat-form-field {
+    flex: 1;
+  }
+}
+
+.lines-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--sv-ink);
+  margin-top: 8px;
+}
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.line-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.product-field {
+  flex: 2;
+}
+
+.qty-field {
+  flex: 1;
+  min-width: 90px;
+}
+
+.cost-field {
+  flex: 1;
+  min-width: 110px;
+}
+
+.total-row {
+  text-align: right;
+  font-size: 14px;
+  color: var(--sv-text-secondary);
+  padding-top: 8px;
+  border-top: 1px solid var(--sv-border);
+
+  strong {
+    font-size: 18px;
+    color: var(--sv-ink);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.error-banner {
+  background: var(--sv-danger-bg);
+  color: var(--sv-danger);
+  border-radius: var(--sv-radius-md);
+  padding: 10px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.submit-button {
+  background: var(--sv-amber) !important;
+  color: var(--sv-amber-ink) !important;
+  font-weight: 700;
+}

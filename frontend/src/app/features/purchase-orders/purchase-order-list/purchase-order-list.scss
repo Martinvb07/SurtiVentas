@@ -1,0 +1,93 @@
+.po-list-page {
+  padding: 24px 28px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 18px;
+
+  h1 {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0;
+    color: var(--sv-ink);
+  }
+
+  .subtitle {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    color: var(--sv-text-secondary);
+  }
+}
+
+.new-button {
+  margin-left: auto;
+  background: var(--sv-amber) !important;
+  color: var(--sv-amber-ink) !important;
+  font-weight: 700;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.status-field {
+  width: 200px;
+}
+
+.table-wrapper {
+  background: var(--sv-surface);
+  border: 1px solid var(--sv-border);
+  border-radius: var(--sv-radius-lg);
+  overflow: hidden;
+
+  table {
+    width: 100%;
+  }
+}
+
+.numeric {
+  font-variant-numeric: tabular-nums;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 11px;
+  background: var(--sv-border);
+  color: var(--sv-text-secondary);
+
+  &.status-BORRADOR {
+    background: var(--sv-warning-bg);
+    color: var(--sv-warning-ink);
+  }
+
+  &.status-ENVIADA {
+    background: #e8f0f9;
+    color: var(--sv-primary);
+  }
+
+  &.status-RECIBIDA {
+    background: var(--sv-success-bg);
+    color: var(--sv-success);
+  }
+
+  &.status-CANCELADA {
+    background: var(--sv-danger-bg);
+    color: var(--sv-danger);
+  }
+}
+
+.empty-state {
+  padding: 32px;
+  text-align: center;
+  color: var(--sv-text-muted);
+  font-size: 13px;
+}

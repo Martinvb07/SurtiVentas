@@ -1,0 +1,47 @@
+<h2 mat-dialog-title>{{ isEdit() ? 'Editar proveedor' : 'Nuevo proveedor' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <mat-dialog-content class="content">
+    @if (errorMessage()) {
+      <div class="error-banner">{{ errorMessage() }}</div>
+    }
+
+    <mat-form-field appearance="outline">
+      <mat-label>Nombre del proveedor</mat-label>
+      <input matInput formControlName="name" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Persona de contacto</mat-label>
+      <input matInput formControlName="contactName" />
+    </mat-form-field>
+
+    <div class="row">
+      <mat-form-field appearance="outline">
+        <mat-label>Teléfono</mat-label>
+        <input matInput formControlName="phone" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Correo (opcional)</mat-label>
+        <input matInput formControlName="email" />
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Dirección (opcional)</mat-label>
+      <input matInput formControlName="address" />
+    </mat-form-field>
+
+    @if (isEdit()) {
+      <mat-checkbox formControlName="active">Activo</mat-checkbox>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close [disabled]="saving()">Cancelar</button>
+    <button mat-flat-button type="submit" class="submit-button" [disabled]="saving()">
+      {{ isEdit() ? 'Guardar cambios' : 'Crear proveedor' }}
+    </button>
+  </mat-dialog-actions>
+</form>

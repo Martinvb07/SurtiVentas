@@ -1,0 +1,56 @@
+.supplier-catalog-page {
+  padding: 16px 28px 24px;
+}
+
+.back-button {
+  color: var(--sv-text-secondary);
+  margin-bottom: 8px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 18px;
+
+  h1 {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0;
+    color: var(--sv-ink);
+  }
+
+  .subtitle {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    color: var(--sv-text-secondary);
+  }
+}
+
+.new-button {
+  margin-left: auto;
+  background: var(--sv-amber) !important;
+  color: var(--sv-amber-ink) !important;
+  font-weight: 700;
+}
+
+.table-wrapper {
+  background: var(--sv-surface);
+  border: 1px solid var(--sv-border);
+  border-radius: var(--sv-radius-lg);
+  overflow: hidden;
+
+  table {
+    width: 100%;
+  }
+}
+
+.numeric {
+  font-variant-numeric: tabular-nums;
+}
+
+.empty-state {
+  padding: 32px;
+  text-align: center;
+  color: var(--sv-text-muted);
+  font-size: 13px;
+}

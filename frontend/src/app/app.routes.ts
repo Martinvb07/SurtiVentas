@@ -24,6 +24,14 @@ export const routes: Routes = [
         path: 'customers',
         loadChildren: () => import('./features/customers/customers.routes').then((m) => m.CUSTOMERS_ROUTES),
       },
+      {
+        path: 'suppliers',
+        loadChildren: () => import('./features/suppliers/suppliers.routes').then((m) => m.SUPPLIERS_ROUTES),
+      },
+      {
+        path: 'purchase-orders',
+        loadChildren: () => import('./features/purchase-orders/purchase-orders.routes').then((m) => m.PURCHASE_ORDERS_ROUTES),
+      },
     ],
   },
   { path: '**', redirectTo: 'login' },
