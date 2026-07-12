@@ -38,6 +38,12 @@ export const NAV_SECTIONS: NavSection[] = [
     label: 'Comercial',
     entries: [
       {
+        label: 'Pedidos',
+        icon: 'shopping_cart',
+        route: '/app/orders',
+        roles: [Role.ADMINISTRADOR, Role.VENDEDOR],
+      },
+      {
         label: 'Clientes',
         icon: 'storefront',
         route: '/app/customers',
