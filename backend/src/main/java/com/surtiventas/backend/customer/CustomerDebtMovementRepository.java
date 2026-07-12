@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface CustomerDebtMovementRepository extends JpaRepository<CustomerDebtMovement, Long> {
 
-    @Query("select m from CustomerDebtMovement m join fetch m.createdBy where m.customer.id = :customerId order by m.createdAt desc")
+    @Query("select m from CustomerDebtMovement m join fetch m.createdBy where m.customer.id = :customerId order by m.createdAt desc, m.id desc")
     List<CustomerDebtMovement> findByCustomerIdOrderByCreatedAtDesc(@Param("customerId") Long customerId);
 }

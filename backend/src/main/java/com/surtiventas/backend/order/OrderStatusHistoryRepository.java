@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface OrderStatusHistoryRepository extends JpaRepository<OrderStatusHistory, Long> {
 
-    @Query("select h from OrderStatusHistory h join fetch h.changedBy where h.order.id = :orderId order by h.changedAt asc")
+    @Query("select h from OrderStatusHistory h join fetch h.changedBy where h.order.id = :orderId order by h.changedAt asc, h.id asc")
     List<OrderStatusHistory> findByOrderIdOrderByChangedAtAsc(@Param("orderId") Long orderId);
 }
