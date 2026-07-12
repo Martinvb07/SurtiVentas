@@ -1,6 +1,8 @@
 package com.surtiventas.backend.order;
 
+import com.surtiventas.backend.customer.Customer;
 import com.surtiventas.backend.user.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,6 +13,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,10 +26,12 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Stub order entity: enough shape to prove the state machine end to end.
- * Product/customer relations are added by later catalog/customer modules.
+ * A pre-sale order (pedido) placed by a VENDEDOR on behalf of a customer,
+ * driven through its lifecycle by {@link OrderStateMachine}.
  */
 @Entity
 @Table(name = "orders")
@@ -43,6 +49,10 @@ public class Order {
     @Column(name = "order_number", nullable = false, unique = true, length = 30)
     private String orderNumber;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private OrderStatus status;
@@ -55,6 +65,11 @@ public class Order {
     @Builder.Default
     private BigDecimal totalAmount = BigDecimal.ZERO;
 
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id")
+    @Builder.Default
+    private List<OrderLine> lines = new ArrayList<>();
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -62,4 +77,9 @@ public class Order {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    public void addLine(OrderLine line) {
+        line.setOrder(this);
+        lines.add(line);
+    }
 }
