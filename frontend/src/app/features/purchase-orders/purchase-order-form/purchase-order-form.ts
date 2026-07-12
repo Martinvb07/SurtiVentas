@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,6 +18,7 @@ import { PurchaseOrdersService } from '../purchase-orders.service';
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
+    MatDatepickerModule,
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
@@ -37,7 +39,7 @@ export class PurchaseOrderForm {
 
   protected readonly form = this.fb.nonNullable.group({
     supplierId: [null as number | null, Validators.required],
-    expectedDate: [''],
+    expectedDate: [null as Date | null],
     lines: this.fb.array([this.buildLineGroup()]),
   });
 
@@ -91,7 +93,7 @@ export class PurchaseOrderForm {
     this.purchaseOrdersService
       .create({
         supplierId: value.supplierId!,
-        expectedDate: value.expectedDate || null,
+        expectedDate: value.expectedDate ? this.formatDate(value.expectedDate) : null,
         lines: value.lines.map((line) => ({
           productId: line.productId!,
           quantity: line.quantity,
@@ -116,5 +118,12 @@ export class PurchaseOrderForm {
       quantity: [1, [Validators.required, Validators.min(1)]],
       unitCost: [0, [Validators.required, Validators.min(0)]],
     });
+  }
+
+  private formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }

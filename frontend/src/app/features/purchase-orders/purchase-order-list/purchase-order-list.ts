@@ -80,7 +80,7 @@ export class PurchaseOrderList {
   }
 
   protected openCreateDialog(): void {
-    const ref = this.dialog.open(PurchaseOrderForm, { width: '640px' });
+    const ref = this.dialog.open(PurchaseOrderForm, { width: '720px', maxWidth: '720px' });
     ref.afterClosed().subscribe((created) => {
       if (created) {
         this.refresh();
