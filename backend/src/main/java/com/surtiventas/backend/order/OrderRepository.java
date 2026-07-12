@@ -13,6 +13,7 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
 
     @Query("select distinct o from Order o " +
             "join fetch o.customer " +
+            "left join fetch o.assignedDriver " +
             "left join fetch o.lines l " +
             "left join fetch l.product " +
             "where o.id = :id")

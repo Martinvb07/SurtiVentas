@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 public record OrderTransitionRequest(
         @NotNull OrderStatus targetStatus,
-        String note
+        String note,
+        Long driverId
 ) {
 }

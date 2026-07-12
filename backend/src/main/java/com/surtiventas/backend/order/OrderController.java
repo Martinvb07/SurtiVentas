@@ -37,8 +37,9 @@ public class OrderController {
     public ResponseEntity<Page<OrderResponse>> search(
             @RequestParam(required = false) Long customerId,
             @RequestParam(required = false) OrderStatus status,
+            @RequestParam(required = false) Long assignedDriverId,
             Pageable pageable) {
-        Page<OrderResponse> page = orderService.search(customerId, status, pageable)
+        Page<OrderResponse> page = orderService.search(customerId, status, assignedDriverId, pageable)
                 .map(orderMapper::toSummaryResponse);
         return ResponseEntity.ok(page);
     }
@@ -68,7 +69,7 @@ public class OrderController {
     public ResponseEntity<OrderResponse> transition(@PathVariable Long id,
                                                       @Valid @RequestBody OrderTransitionRequest request,
                                                       @AuthenticationPrincipal CustomUserDetails actingUser) {
-        Order order = orderService.transition(id, request.targetStatus(), request.note(), actingUser);
+        Order order = orderService.transition(id, request.targetStatus(), request.note(), request.driverId(), actingUser);
         return ResponseEntity.ok(orderMapper.toResponse(order));
     }
 }

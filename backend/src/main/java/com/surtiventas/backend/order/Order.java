@@ -61,6 +61,10 @@ public class Order {
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_driver_id")
+    private User assignedDriver;
+
     @Column(name = "total_amount", nullable = false, precision = 14, scale = 2)
     @Builder.Default
     private BigDecimal totalAmount = BigDecimal.ZERO;

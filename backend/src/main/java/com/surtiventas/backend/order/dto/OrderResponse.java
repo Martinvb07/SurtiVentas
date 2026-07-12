@@ -13,6 +13,8 @@ public record OrderResponse(
         String customerName,
         OrderStatus status,
         Long createdById,
+        Long assignedDriverId,
+        String assignedDriverName,
         BigDecimal totalAmount,
         List<OrderLineResponse> lines,
         Instant createdAt,

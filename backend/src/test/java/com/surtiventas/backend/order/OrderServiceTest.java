@@ -7,9 +7,11 @@ import com.surtiventas.backend.order.dto.OrderCreateRequest;
 import com.surtiventas.backend.order.dto.OrderLineRequest;
 import com.surtiventas.backend.product.Product;
 import com.surtiventas.backend.product.ProductRepository;
+import com.surtiventas.backend.product.ProductService;
 import com.surtiventas.backend.security.CustomUserDetails;
 import com.surtiventas.backend.user.Role;
 import com.surtiventas.backend.user.User;
+import com.surtiventas.backend.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +25,9 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,19 +41,28 @@ class OrderServiceTest {
     private CustomerRepository customerRepository;
     @Mock
     private ProductRepository productRepository;
+    @Mock
+    private ProductService productService;
+    @Mock
+    private UserRepository userRepository;
 
     private OrderService orderService;
     private CustomUserDetails actingUser;
+    private CustomUserDetails bodegueroUser;
     private Customer customer;
 
     @BeforeEach
     void setUp() {
         orderService = new OrderService(orderRepository, historyRepository, new OrderStateMachine(),
-                customerRepository, productRepository);
+                customerRepository, productRepository, productService, userRepository);
 
         User user = User.builder().id(1L).email("vendedor@surtiventas.com").fullName("Vendedor Uno")
                 .role(Role.VENDEDOR).active(true).build();
         actingUser = new CustomUserDetails(user);
+
+        User bodeguero = User.builder().id(2L).email("bodeguero@surtiventas.com").fullName("Bodeguero Uno")
+                .role(Role.BODEGUERO).active(true).build();
+        bodegueroUser = new CustomUserDetails(bodeguero);
 
         customer = Customer.builder().id(20L).storeName("Tienda X").active(true).build();
     }
@@ -91,6 +105,37 @@ class OrderServiceTest {
         OrderCreateRequest request = new OrderCreateRequest(20L, List.of(new OrderLineRequest(10L, 5)));
 
         assertThatThrownBy(() -> orderService.create(request, actingUser))
+                .isInstanceOf(ApiException.class);
+    }
+
+    @Test
+    void transitioningToAlistadoDecrementsStockForEveryLine() {
+        Product productA = Product.builder().id(10L).sku("A").name("Producto A").price(BigDecimal.TEN).stock(50).build();
+        Product productB = Product.builder().id(11L).sku("B").name("Producto B").price(BigDecimal.TEN).stock(50).build();
+
+        Order order = Order.builder().id(99L).orderNumber("PED-1").customer(customer)
+                .status(OrderStatus.EN_ALISTAMIENTO).createdBy(actingUser.getUser()).build();
+        order.addLine(OrderLine.builder().product(productA).quantity(5).unitPrice(BigDecimal.TEN).subtotal(BigDecimal.valueOf(50)).build());
+        order.addLine(OrderLine.builder().product(productB).quantity(3).unitPrice(BigDecimal.TEN).subtotal(BigDecimal.valueOf(30)).build());
+
+        when(orderRepository.findWithAssociationsById(99L)).thenReturn(Optional.of(order));
+        when(orderRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        orderService.transition(99L, OrderStatus.ALISTADO, "Alistado", null, bodegueroUser);
+
+        verify(productService).adjustStock(eq(10L), eq(-5), any(), eq(bodegueroUser));
+        verify(productService).adjustStock(eq(11L), eq(-3), any(), eq(bodegueroUser));
+        verify(productService, times(2)).adjustStock(any(), any(), any(), any());
+    }
+
+    @Test
+    void assigningRouteWithoutDriverIdThrows() {
+        Order order = Order.builder().id(99L).orderNumber("PED-1").customer(customer)
+                .status(OrderStatus.ALISTADO).createdBy(actingUser.getUser()).build();
+
+        when(orderRepository.findWithAssociationsById(99L)).thenReturn(Optional.of(order));
+
+        assertThatThrownBy(() -> orderService.transition(99L, OrderStatus.ASIGNADO_RUTA, null, null, bodegueroUser))
                 .isInstanceOf(ApiException.class);
     }
 }
