@@ -5,9 +5,39 @@
 
   <div class="spacer"></div>
 
-  <button mat-icon-button class="bell-button" aria-label="Notificaciones">
-    <mat-icon matBadgeColor="warn">notifications</mat-icon>
+  <button
+    mat-icon-button
+    class="bell-button"
+    [matMenuTriggerFor]="notifMenu"
+    (menuOpened)="onNotificationsOpened()"
+    aria-label="Notificaciones"
+  >
+    <mat-icon
+      [matBadge]="notifications.unreadCount()"
+      [matBadgeHidden]="notifications.unreadCount() === 0"
+      matBadgeColor="warn"
+      matBadgeSize="small"
+      >notifications</mat-icon
+    >
   </button>
+
+  <mat-menu #notifMenu="matMenu" class="notif-menu" xPosition="before">
+    <div class="notif-head">Notificaciones</div>
+    @if (notifications.notifications().length) {
+      @for (n of notifications.notifications(); track n.timestamp) {
+        <div class="notif-item" [class.unread]="!n.read">
+          <div class="notif-title">{{ n.title }}</div>
+          <div class="notif-msg">{{ n.message }}</div>
+          <div class="notif-time">{{ n.timestamp | date: 'short' }}</div>
+        </div>
+      }
+    } @else {
+      <div class="notif-empty">
+        <mat-icon>notifications_none</mat-icon>
+        <span>No tienes notificaciones</span>
+      </div>
+    }
+  </mat-menu>
 
   <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Cuenta">
     <div class="avatar">
