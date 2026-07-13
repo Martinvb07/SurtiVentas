@@ -13,6 +13,18 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long>, JpaSpec
 
     boolean existsByOrderId(Long orderId);
 
+    // ---- Buyer portal (account statement) ----
+
+    long countByCustomerIdAndStatusNot(Long customerId, InvoiceStatus status);
+
+    @Query("select count(i) from Invoice i where i.customer.id = :customerId " +
+            "and i.status <> com.surtiventas.backend.billing.InvoiceStatus.PAGADA and i.dueDate < CURRENT_DATE")
+    long countOverdueByCustomerId(@Param("customerId") Long customerId);
+
+    @Query("select min(i.dueDate) from Invoice i where i.customer.id = :customerId " +
+            "and i.status <> com.surtiventas.backend.billing.InvoiceStatus.PAGADA")
+    java.time.LocalDate findNextDueDateByCustomerId(@Param("customerId") Long customerId);
+
     @Query("select distinct i from Invoice i " +
             "join fetch i.order " +
             "join fetch i.customer " +

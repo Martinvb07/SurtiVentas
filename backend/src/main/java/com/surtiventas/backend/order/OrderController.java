@@ -34,6 +34,7 @@ public class OrderController {
     private final OrderMapper orderMapper;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VENDEDOR', 'BODEGUERO', 'CONDUCTOR', 'FACTURADOR')")
     public ResponseEntity<Page<OrderResponse>> search(
             @RequestParam(required = false) Long customerId,
             @RequestParam(required = false) OrderStatus status,
@@ -45,11 +46,13 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VENDEDOR', 'BODEGUERO', 'CONDUCTOR', 'FACTURADOR')")
     public ResponseEntity<OrderResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(orderMapper.toResponse(orderService.findById(id)));
     }
 
     @GetMapping("/{id}/history")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'VENDEDOR', 'BODEGUERO', 'CONDUCTOR', 'FACTURADOR')")
     public ResponseEntity<List<OrderHistoryEntryResponse>> getHistory(@PathVariable Long id) {
         List<OrderHistoryEntryResponse> history = orderService.getHistory(id).stream()
                 .map(orderMapper::toHistoryResponse)

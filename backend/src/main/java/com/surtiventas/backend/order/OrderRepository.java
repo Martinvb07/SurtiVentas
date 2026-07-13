@@ -28,6 +28,10 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
 
     long countByStatusIn(Collection<OrderStatus> statuses);
 
+    long countByCustomerId(Long customerId);
+
+    Optional<Order> findFirstByCustomerIdOrderByCreatedAtDesc(Long customerId);
+
     long countByStatusAndUpdatedAtGreaterThanEqual(OrderStatus status, Instant from);
 
     @Query("select coalesce(sum(o.totalAmount), 0) from Order o " +
