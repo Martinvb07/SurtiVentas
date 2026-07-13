@@ -1,0 +1,66 @@
+<h2 mat-dialog-title>Factura {{ data.invoice.invoiceNumber }}</h2>
+
+<mat-dialog-content>
+  <div class="grid">
+    <div class="field">
+      <span class="label">Tienda</span>
+      <span class="value">{{ data.invoice.customerName }}</span>
+    </div>
+    <div class="field">
+      <span class="label">Pedido</span>
+      <span class="value">{{ data.invoice.orderNumber }}</span>
+    </div>
+    <div class="field">
+      <span class="label">Emitida</span>
+      <span class="value">{{ data.invoice.issuedAt | date: 'dd/MM/yyyy' }}</span>
+    </div>
+    <div class="field">
+      <span class="label">Vence</span>
+      <span class="value" [class.overdue]="data.invoice.overdue">
+        {{ data.invoice.dueDate | date: 'dd/MM/yyyy' }}
+        @if (data.invoice.overdue) {
+          <span class="tag">Vencida</span>
+        }
+      </span>
+    </div>
+  </div>
+
+  <div class="amounts">
+    <div class="amount">
+      <span class="label">Total</span>
+      <span class="value numeric">{{ data.invoice.totalAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+    </div>
+    <div class="amount">
+      <span class="label">Pagado</span>
+      <span class="value numeric ok">{{ data.invoice.paidAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+    </div>
+    <div class="amount">
+      <span class="label">Saldo</span>
+      <span class="value numeric due">{{ data.invoice.balance | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+    </div>
+  </div>
+
+  <h3 class="section">Abonos</h3>
+  @if (data.invoice.payments.length) {
+    <ul class="payments">
+      @for (p of data.invoice.payments; track p.id) {
+        <li class="payment">
+          <div class="payment-main">
+            <span class="payment-method">{{ p.method | titlecase }}</span>
+            @if (p.reference) {
+              <span class="payment-ref">{{ p.reference }}</span>
+            }
+            <span class="payment-meta">{{ p.paidAt | date: 'dd/MM/yyyy' }} · {{ p.registeredByName }}</span>
+          </div>
+          <span class="payment-amount numeric">{{ p.amount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="empty">Sin abonos registrados.</p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cerrar</button>
+</mat-dialog-actions>

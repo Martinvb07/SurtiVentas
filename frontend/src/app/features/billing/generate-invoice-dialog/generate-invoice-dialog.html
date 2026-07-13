@@ -1,0 +1,41 @@
+<h2 mat-dialog-title>Generar factura</h2>
+
+<mat-dialog-content>
+  <div class="summary">
+    <div class="summary-row">
+      <span class="label">Pedido</span>
+      <span class="value">{{ data.order.orderNumber }}</span>
+    </div>
+    <div class="summary-row">
+      <span class="label">Tienda</span>
+      <span class="value">{{ data.order.customerName }}</span>
+    </div>
+    <div class="summary-row total">
+      <span class="label">Total a facturar</span>
+      <span class="value numeric">{{ data.order.totalAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+    </div>
+  </div>
+
+  <form [formGroup]="form" class="form">
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Fecha de vencimiento</mat-label>
+      <input matInput [matDatepicker]="picker" [min]="minDate" formControlName="dueDate" />
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      @if (form.controls.dueDate.hasError('required')) {
+        <mat-error>Indica la fecha de vencimiento</mat-error>
+      }
+    </mat-form-field>
+  </form>
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close [disabled]="saving()">Cancelar</button>
+  <button mat-flat-button color="primary" (click)="submit()" [disabled]="saving()">
+    {{ saving() ? 'Generando…' : 'Generar factura' }}
+  </button>
+</mat-dialog-actions>

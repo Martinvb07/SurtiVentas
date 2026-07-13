@@ -1,0 +1,58 @@
+<h2 mat-dialog-title>Registrar abono</h2>
+
+<mat-dialog-content>
+  <div class="summary">
+    <div class="summary-row">
+      <span class="label">Factura</span>
+      <span class="value">{{ data.invoice.invoiceNumber }}</span>
+    </div>
+    <div class="summary-row">
+      <span class="label">Tienda</span>
+      <span class="value">{{ data.invoice.customerName }}</span>
+    </div>
+    <div class="summary-row total">
+      <span class="label">Saldo pendiente</span>
+      <span class="value numeric">{{ data.invoice.balance | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+    </div>
+  </div>
+
+  <form [formGroup]="form" class="form">
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Monto del abono</mat-label>
+      <span matTextPrefix>$&nbsp;</span>
+      <input matInput type="number" formControlName="amount" min="0.01" [max]="data.invoice.balance" />
+      @if (form.controls.amount.hasError('required')) {
+        <mat-error>Indica el monto</mat-error>
+      } @else if (form.controls.amount.hasError('max')) {
+        <mat-error>No puede superar el saldo pendiente</mat-error>
+      } @else if (form.controls.amount.hasError('min')) {
+        <mat-error>El monto debe ser mayor que cero</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Método de pago</mat-label>
+      <mat-select formControlName="method">
+        @for (m of methods; track m) {
+          <mat-option [value]="m">{{ m | titlecase }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Referencia (opcional)</mat-label>
+      <input matInput formControlName="reference" maxlength="100" placeholder="N° de transferencia, recibo…" />
+    </mat-form-field>
+  </form>
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close [disabled]="saving()">Cancelar</button>
+  <button mat-flat-button color="primary" (click)="submit()" [disabled]="saving()">
+    {{ saving() ? 'Registrando…' : 'Registrar abono' }}
+  </button>
+</mat-dialog-actions>

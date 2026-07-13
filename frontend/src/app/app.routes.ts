@@ -40,6 +40,10 @@ export const routes: Routes = [
         path: 'purchase-orders',
         loadChildren: () => import('./features/purchase-orders/purchase-orders.routes').then((m) => m.PURCHASE_ORDERS_ROUTES),
       },
+      {
+        path: 'billing',
+        loadChildren: () => import('./features/billing/billing.routes').then((m) => m.BILLING_ROUTES),
+      },
     ],
   },
   { path: '**', redirectTo: 'login' },
