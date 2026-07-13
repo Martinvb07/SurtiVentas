@@ -1,0 +1,32 @@
+<div class="map-page">
+  <header class="map-head">
+    <div>
+      <h1>Mapa de entregas</h1>
+      <p class="subtitle">Tus pedidos asignados en ruta</p>
+    </div>
+    <span class="count">{{ deliveries().length }} entregas</span>
+  </header>
+
+  <div class="map-layout">
+    <div class="map-box">
+      <app-route-map [points]="points()" />
+    </div>
+
+    <div class="stops">
+      @for (d of deliveries(); track d.orderId) {
+        <div class="stop">
+          <mat-icon>local_shipping</mat-icon>
+          <div class="stop-main">
+            <div class="stop-title">{{ d.customerName }}</div>
+            <div class="stop-sub">{{ d.orderNumber }} · {{ d.address }}</div>
+          </div>
+          <span class="stop-amount numeric">{{ d.totalAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+        </div>
+      } @empty {
+        @if (!loading()) {
+          <div class="empty">No tienes entregas en ruta con ubicación.</div>
+        }
+      }
+    </div>
+  </div>
+</div>

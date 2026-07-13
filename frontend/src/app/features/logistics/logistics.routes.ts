@@ -13,4 +13,14 @@ export const LOGISTICS_ROUTES: Routes = [
     loadComponent: () => import('./driver-deliveries/driver-deliveries').then((m) => m.DriverDeliveries),
     canActivate: [roleGuard([Role.ADMINISTRADOR, Role.CONDUCTOR])],
   },
+  {
+    path: 'route',
+    loadComponent: () => import('./seller-route/seller-route').then((m) => m.SellerRoute),
+    canActivate: [roleGuard([Role.ADMINISTRADOR, Role.VENDEDOR])],
+  },
+  {
+    path: 'map',
+    loadComponent: () => import('./driver-map/driver-map').then((m) => m.DriverMap),
+    canActivate: [roleGuard([Role.ADMINISTRADOR, Role.CONDUCTOR])],
+  },
 ];

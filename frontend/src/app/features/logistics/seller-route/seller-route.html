@@ -1,0 +1,32 @@
+<div class="map-page">
+  <header class="map-head">
+    <div>
+      <h1>Mi ruta</h1>
+      <p class="subtitle">Tiendas de tu zona</p>
+    </div>
+    <span class="count">{{ stores().length }} tiendas</span>
+  </header>
+
+  <div class="map-layout">
+    <div class="map-box">
+      <app-route-map [points]="points()" />
+    </div>
+
+    <div class="stops">
+      @for (s of stores(); track s.id) {
+        <div class="stop">
+          <mat-icon>storefront</mat-icon>
+          <div class="stop-main">
+            <div class="stop-title">{{ s.storeName }}</div>
+            <div class="stop-sub">{{ s.address }}</div>
+          </div>
+          <span class="stop-badge">{{ s.classification }}</span>
+        </div>
+      } @empty {
+        @if (!loading()) {
+          <div class="empty">No hay tiendas con ubicación registrada.</div>
+        }
+      }
+    </div>
+  </div>
+</div>

@@ -49,6 +49,12 @@ export const NAV_SECTIONS: NavSection[] = [
         route: '/app/customers',
         roles: [Role.ADMINISTRADOR, Role.VENDEDOR, Role.FACTURADOR],
       },
+      {
+        label: 'Mi ruta',
+        icon: 'map',
+        route: '/app/logistics/route',
+        roles: [Role.ADMINISTRADOR, Role.VENDEDOR],
+      },
     ],
   },
   {
@@ -64,6 +70,12 @@ export const NAV_SECTIONS: NavSection[] = [
         label: 'Mis entregas',
         icon: 'directions_car',
         route: '/app/logistics/deliveries',
+        roles: [Role.ADMINISTRADOR, Role.CONDUCTOR],
+      },
+      {
+        label: 'Mapa de entregas',
+        icon: 'map',
+        route: '/app/logistics/map',
         roles: [Role.ADMINISTRADOR, Role.CONDUCTOR],
       },
     ],
