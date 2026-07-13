@@ -1,0 +1,76 @@
+:host {
+  display: block;
+}
+
+.kpi {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 100%;
+  padding: 16px 18px;
+  background: var(--sv-surface);
+  border: 1px solid var(--sv-border);
+  border-radius: var(--sv-radius-lg);
+  border-left: 4px solid var(--sv-border-strong);
+}
+
+.kpi__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--sv-bg);
+  color: var(--sv-text-secondary);
+
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.kpi__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.kpi__value {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--sv-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kpi__label {
+  font-size: 12.5px;
+  color: var(--sv-text-secondary);
+  margin-top: 2px;
+}
+
+.kpi__hint {
+  font-size: 11px;
+  color: var(--sv-text-muted);
+  margin-top: 4px;
+}
+
+@each $tone, $color, $bg in (
+  (primary, var(--sv-primary), rgba(27, 74, 122, 0.1)),
+  (success, var(--sv-success), var(--sv-success-bg)),
+  (warning, var(--sv-warning), var(--sv-warning-bg)),
+  (danger, var(--sv-danger), var(--sv-danger-bg))
+) {
+  .kpi--#{$tone} {
+    border-left-color: #{$color};
+
+    .kpi__icon {
+      background: #{$bg};
+      color: #{$color};
+    }
+  }
+}

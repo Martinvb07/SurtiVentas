@@ -1,5 +1,12 @@
 :host {
   display: block;
+  // Pin the sidebar to the viewport so its footer stays visible and the nav
+  // scrolls on its own, independent of the (taller) scrolling page content.
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  height: 100vh;
+  z-index: 10;
 }
 
 .sidebar {
@@ -10,7 +17,7 @@
   color: #fff;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100%;
   transition: width 0.2s ease;
   overflow: hidden;
 

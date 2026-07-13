@@ -1,0 +1,124 @@
+<section class="dash">
+  <header class="dash-head">
+    <div>
+      <h1 class="dash-title">Panel de Gerencia</h1>
+      <p class="dash-sub">Visión global del negocio — {{ auth.currentUser()?.fullName }}</p>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="dash-loading">Cargando indicadores…</div>
+  } @else if (data(); as d) {
+    <div class="dash-kpis">
+      <app-kpi-card
+        icon="today"
+        tone="primary"
+        label="Ventas de hoy"
+        [value]="d.salesToday | currency: 'COP' : 'symbol-narrow' : '1.0-0'"
+      />
+      <app-kpi-card
+        icon="trending_up"
+        tone="success"
+        label="Ventas del mes"
+        [value]="d.salesMonth | currency: 'COP' : 'symbol-narrow' : '1.0-0'"
+      />
+      <app-kpi-card
+        icon="local_shipping"
+        tone="neutral"
+        label="Pedidos en curso"
+        [value]="d.ordersInProgress"
+      />
+      <app-kpi-card
+        icon="account_balance_wallet"
+        tone="warning"
+        label="Cartera total"
+        [value]="d.totalReceivables | currency: 'COP' : 'symbol-narrow' : '1.0-0'"
+      />
+      <app-kpi-card
+        icon="inventory_2"
+        tone="danger"
+        label="Productos con stock bajo"
+        [value]="d.lowStockCount"
+      />
+      <app-kpi-card
+        icon="storefront"
+        tone="neutral"
+        label="Clientes activos"
+        [value]="d.activeCustomers"
+      />
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-card dash-col-8">
+        <div class="dash-card-head">
+          <h2 class="dash-card-title">Ventas — últimos 14 días</h2>
+        </div>
+        <div class="dash-chart">
+          @if (trendConfig(); as cfg) {
+            <app-chart [config]="cfg" />
+          }
+        </div>
+      </div>
+
+      <div class="dash-card dash-col-4">
+        <div class="dash-card-head">
+          <h2 class="dash-card-title">Pedidos por estado</h2>
+        </div>
+        <div class="dash-chart">
+          @if (statusConfig(); as cfg) {
+            <app-chart [config]="cfg" />
+          } @else {
+            <div class="dash-empty"><mat-icon>donut_large</mat-icon>Aún no hay pedidos</div>
+          }
+        </div>
+      </div>
+
+      <div class="dash-card dash-col-7">
+        <div class="dash-card-head">
+          <h2 class="dash-card-title">Ventas por vendedor (mes)</h2>
+        </div>
+        <div class="dash-chart">
+          @if (sellerConfig(); as cfg) {
+            <app-chart [config]="cfg" />
+          } @else {
+            <div class="dash-empty"><mat-icon>bar_chart</mat-icon>Sin ventas registradas este mes</div>
+          }
+        </div>
+      </div>
+
+      <div class="dash-card dash-col-5">
+        <div class="dash-card-head">
+          <h2 class="dash-card-title">Productos más vendidos</h2>
+        </div>
+        @if (d.topProducts.length) {
+          <div class="dash-list">
+            @for (p of d.topProducts; track p.name) {
+              <div class="dash-list-row">
+                <div class="dash-list-main">
+                  <div class="dash-list-primary">{{ p.name }}</div>
+                </div>
+                <span class="dash-list-amount numeric">{{ p.quantity }} u.</span>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="dash-empty"><mat-icon>emoji_events</mat-icon>Sin ventas todavía</div>
+        }
+      </div>
+    </div>
+
+    <p class="dash-section-title">Accesos rápidos</p>
+    <div class="dash-qa">
+      <app-quick-action icon="shopping_cart" label="Pedidos" route="/app/orders" />
+      <app-quick-action icon="storefront" label="Clientes" route="/app/customers" />
+      <app-quick-action icon="category" label="Productos" route="/app/catalog/products" />
+      <app-quick-action icon="local_shipping" label="Proveedores" route="/app/suppliers" />
+      <app-quick-action icon="receipt_long" label="Órdenes de compra" route="/app/purchase-orders" />
+      <app-quick-action icon="inventory" label="Alistamiento" route="/app/logistics/warehouse" />
+      <app-quick-action icon="group" label="Usuarios y roles" soon />
+      <app-quick-action icon="map" label="Mapa en vivo" soon />
+    </div>
+  } @else {
+    <div class="dash-empty"><mat-icon>error_outline</mat-icon>No se pudieron cargar los indicadores.</div>
+  }
+</section>

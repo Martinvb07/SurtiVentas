@@ -1,0 +1,100 @@
+<section class="dash">
+  <header class="dash-head">
+    <div>
+      <h1 class="dash-title">Mi jornada</h1>
+      <p class="dash-sub">Toma de pedidos y avance del mes — {{ auth.currentUser()?.fullName }}</p>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="dash-loading">Cargando tu resumen…</div>
+  } @else if (data(); as d) {
+    <div class="dash-kpis">
+      <app-kpi-card
+        icon="payments"
+        tone="success"
+        label="Mis ventas del mes"
+        [value]="d.mySalesMonth | currency: 'COP' : 'symbol-narrow' : '1.0-0'"
+      />
+      <app-kpi-card
+        icon="receipt_long"
+        tone="primary"
+        label="Pedidos del mes"
+        [value]="d.myOrdersMonth"
+      />
+      <app-kpi-card
+        icon="pending_actions"
+        tone="warning"
+        label="Pedidos en curso"
+        [value]="d.myOrdersInProgress"
+      />
+      <app-kpi-card
+        icon="storefront"
+        tone="neutral"
+        label="Tiendas atendidas"
+        [value]="d.customersServedMonth"
+      />
+    </div>
+
+    <p class="dash-section-title">Acciones rápidas</p>
+    <div class="dash-qa">
+      <app-quick-action icon="add_shopping_cart" label="Tomar / ver pedidos" route="/app/orders" />
+      <app-quick-action icon="storefront" label="Clientes / tiendas" route="/app/customers" />
+      <app-quick-action icon="category" label="Consultar catálogo" route="/app/catalog/products" />
+      <app-quick-action icon="route" label="Mi ruta de hoy" soon />
+      <app-quick-action icon="emoji_events" label="Meta y comisión" soon />
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-card dash-col-8">
+        <div class="dash-card-head">
+          <h2 class="dash-card-title">Mis ventas — últimos 14 días</h2>
+        </div>
+        <div class="dash-chart">
+          @if (trendConfig(); as cfg) {
+            <app-chart [config]="cfg" />
+          }
+        </div>
+      </div>
+
+      <div class="dash-card dash-col-4">
+        <div class="dash-card-head">
+          <h2 class="dash-card-title">Mis pedidos por estado</h2>
+        </div>
+        <div class="dash-chart">
+          @if (statusConfig(); as cfg) {
+            <app-chart [config]="cfg" />
+          } @else {
+            <div class="dash-empty"><mat-icon>donut_large</mat-icon>Aún no tomas pedidos</div>
+          }
+        </div>
+      </div>
+
+      <div class="dash-card dash-col-12">
+        <div class="dash-card-head">
+          <h2 class="dash-card-title">Pedidos recientes</h2>
+        </div>
+        @if (d.recentOrders.length) {
+          <div class="dash-list">
+            @for (o of d.recentOrders; track o.id) {
+              <div class="dash-list-row">
+                <div class="dash-list-main">
+                  <div class="dash-list-primary">{{ o.customerName }}</div>
+                  <div class="dash-list-secondary">{{ o.orderNumber }}</div>
+                </div>
+                <span class="dash-chip" [class]="'is-' + statusTone(o.status)">{{ statusLabel(o.status) }}</span>
+                <span class="dash-list-amount numeric">{{
+                  o.totalAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+                }}</span>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="dash-empty"><mat-icon>inbox</mat-icon>Todavía no has tomado pedidos</div>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="dash-empty"><mat-icon>error_outline</mat-icon>No se pudo cargar tu resumen.</div>
+  }
+</section>

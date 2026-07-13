@@ -1,0 +1,72 @@
+<section class="dash">
+  <header class="dash-head">
+    <div>
+      <h1 class="dash-title">Panel de Bodega</h1>
+      <p class="dash-sub">Cola de alistamiento e inventario — {{ auth.currentUser()?.fullName }}</p>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="dash-loading">Cargando cola de trabajo…</div>
+  } @else if (data(); as d) {
+    <div class="dash-kpis">
+      <app-kpi-card icon="playlist_add_check" tone="primary" label="Por alistar" [value]="d.toPick" />
+      <app-kpi-card icon="autorenew" tone="warning" label="En proceso" [value]="d.inProgress" />
+      <app-kpi-card icon="inventory" tone="success" label="Listo para despacho" [value]="d.readyForDispatch" />
+      <app-kpi-card icon="warning" tone="danger" label="Productos con stock bajo" [value]="d.lowStockCount" />
+      <app-kpi-card
+        icon="local_shipping"
+        tone="neutral"
+        label="Compras por recibir"
+        [value]="d.purchaseOrdersToReceive"
+      />
+    </div>
+
+    <p class="dash-section-title">Acciones rápidas</p>
+    <div class="dash-qa">
+      <app-quick-action icon="view_kanban" label="Tablero de alistamiento" route="/app/logistics/warehouse" />
+      <app-quick-action icon="category" label="Inventario / productos" route="/app/catalog/products" />
+      <app-quick-action icon="receipt_long" label="Órdenes de compra" route="/app/purchase-orders" />
+      <app-quick-action icon="document_scanner" label="Recepción de mercancía (OCR)" soon />
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-card dash-col-6">
+        <div class="dash-card-head">
+          <h2 class="dash-card-title">Flujo de alistamiento</h2>
+        </div>
+        <div class="dash-chart">
+          @if (funnelConfig(); as cfg) {
+            <app-chart [config]="cfg" />
+          } @else {
+            <div class="dash-empty"><mat-icon>inbox</mat-icon>No hay pedidos en la cola</div>
+          }
+        </div>
+      </div>
+
+      <div class="dash-card dash-col-6">
+        <div class="dash-card-head">
+          <h2 class="dash-card-title">Stock bajo — reponer pronto</h2>
+          <span class="dash-card-note">stock ≤ mínimo</span>
+        </div>
+        @if (d.lowStockItems.length) {
+          <div class="dash-list">
+            @for (p of d.lowStockItems; track p.id) {
+              <div class="dash-list-row">
+                <div class="dash-list-main">
+                  <div class="dash-list-primary">{{ p.name }}</div>
+                  <div class="dash-list-secondary">{{ p.sku }}</div>
+                </div>
+                <span class="dash-chip is-danger numeric">{{ p.stock }} / mín {{ p.minStock }}</span>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="dash-empty"><mat-icon>check_circle</mat-icon>Todo el inventario está por encima del mínimo</div>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="dash-empty"><mat-icon>error_outline</mat-icon>No se pudo cargar la cola de trabajo.</div>
+  }
+</section>

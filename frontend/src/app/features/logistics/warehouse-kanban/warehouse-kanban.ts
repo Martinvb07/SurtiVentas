@@ -7,7 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { forkJoin } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
 import { Role } from '../../../core/auth/models/role.enum';
-import { Order, OrderStatus } from '../../orders/models/order.model';
+import { Order, OrderLine, OrderStatus } from '../../orders/models/order.model';
 import { OrdersService } from '../../orders/orders.service';
 import { AssignDriverDialog } from '../assign-driver-dialog/assign-driver-dialog';
 
@@ -32,8 +32,41 @@ export class WarehouseKanban {
 
   protected readonly canCancel = computed(() => this.authService.currentUser()?.role === Role.ADMINISTRADOR);
 
+  // Per-order picking list, loaded on demand (the list endpoint omits lines).
+  private readonly linesByOrder = signal<Record<number, OrderLine[]>>({});
+  private readonly expanded = signal<Record<number, boolean>>({});
+  private readonly loadingLines = signal<Record<number, boolean>>({});
+
   constructor() {
     this.refresh();
+  }
+
+  protected isExpanded(orderId: number): boolean {
+    return !!this.expanded()[orderId];
+  }
+
+  protected isLoadingLines(orderId: number): boolean {
+    return !!this.loadingLines()[orderId];
+  }
+
+  protected orderLines(orderId: number): OrderLine[] {
+    return this.linesByOrder()[orderId] ?? [];
+  }
+
+  protected toggleLines(order: Order): void {
+    const willOpen = !this.expanded()[order.id];
+    this.expanded.update((state) => ({ ...state, [order.id]: willOpen }));
+
+    if (willOpen && !this.linesByOrder()[order.id]) {
+      this.loadingLines.update((state) => ({ ...state, [order.id]: true }));
+      this.ordersService.getById(order.id).subscribe({
+        next: (full) => {
+          this.linesByOrder.update((state) => ({ ...state, [order.id]: full.lines }));
+          this.loadingLines.update((state) => ({ ...state, [order.id]: false }));
+        },
+        error: () => this.loadingLines.update((state) => ({ ...state, [order.id]: false })),
+      });
+    }
   }
 
   protected startPicking(order: Order): void {

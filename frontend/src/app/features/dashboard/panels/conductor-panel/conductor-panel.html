@@ -1,0 +1,55 @@
+<section class="dash">
+  <header class="dash-head">
+    <div>
+      <h1 class="dash-title">Mis entregas</h1>
+      <p class="dash-sub">Ruta del día — {{ auth.currentUser()?.fullName }}</p>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="dash-loading">Cargando tus entregas…</div>
+  } @else if (data(); as d) {
+    <div class="dash-kpis">
+      <app-kpi-card icon="local_shipping" tone="primary" label="Asignadas a mí" [value]="d.assignedToMe" />
+      <app-kpi-card icon="task_alt" tone="success" label="Entregadas hoy" [value]="d.deliveredToday" />
+      <app-kpi-card icon="report_problem" tone="danger" label="Novedades abiertas" [value]="d.incidentsOpen" />
+      <app-kpi-card icon="calendar_month" tone="neutral" label="Entregadas este mes" [value]="d.deliveredMonth" />
+    </div>
+
+    <p class="dash-section-title">Acciones rápidas</p>
+    <div class="dash-qa">
+      <app-quick-action icon="checklist" label="Confirmar entregas" route="/app/logistics/deliveries" />
+      <app-quick-action icon="map" label="Mapa de la ruta" soon />
+      <app-quick-action icon="photo_camera" label="Evidencia (firma/foto)" soon />
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-card dash-col-12">
+        <div class="dash-card-head">
+          <h2 class="dash-card-title">Entregas pendientes de hoy</h2>
+          <span class="dash-card-note">{{ d.assignedToMe }} en ruta</span>
+        </div>
+        @if (d.myDeliveries.length) {
+          <div class="dash-list">
+            @for (o of d.myDeliveries; track o.id) {
+              <div class="dash-list-row">
+                <div class="dash-list-main">
+                  <div class="dash-list-primary">{{ o.customerName }}</div>
+                  <div class="dash-list-secondary">{{ o.orderNumber }}</div>
+                </div>
+                <span class="dash-chip is-warning">En ruta</span>
+                <span class="dash-list-amount numeric">{{
+                  o.totalAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+                }}</span>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="dash-empty"><mat-icon>done_all</mat-icon>No tienes entregas pendientes</div>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="dash-empty"><mat-icon>error_outline</mat-icon>No se pudieron cargar tus entregas.</div>
+  }
+</section>

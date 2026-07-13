@@ -65,6 +65,12 @@ export class Sidebar {
     return isNavGroup(entry);
   }
 
+  /** The "Mi panel" entry links to /app, which redirects to /app/panel/<role>;
+   *  keep it highlighted while the user is on any role panel. */
+  protected isPanelHome(entry: NavEntry): boolean {
+    return !isNavGroup(entry) && entry.route === '/app' && this.currentUrl().startsWith('/app/panel');
+  }
+
   protected isGroupActive(group: NavGroup): boolean {
     const url = this.currentUrl();
     return group.items.some((item) => url === item.route || url.startsWith(item.route + '/'));

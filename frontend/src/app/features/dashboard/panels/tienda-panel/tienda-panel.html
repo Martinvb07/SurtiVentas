@@ -1,0 +1,30 @@
+<section class="dash">
+  <header class="dash-head">
+    <div>
+      <h1 class="dash-title">Portal de mi tienda</h1>
+      <p class="dash-sub">Autoservicio — {{ auth.currentUser()?.fullName }}</p>
+    </div>
+  </header>
+
+  <div class="dash-card dash-col-12">
+    <div class="dash-card-head">
+      <h2 class="dash-card-title">Bienvenido a tu portal</h2>
+    </div>
+    <div class="dash-empty">
+      <mat-icon>storefront</mat-icon>
+      <p style="max-width: 460px; line-height: 1.55">
+        Aquí podrás consultar tus pedidos y facturas, revisar tu estado de cuenta, repetir tu último
+        pedido y subir comprobantes de pago. Estas funciones se habilitan en la siguiente fase.
+      </p>
+    </div>
+  </div>
+
+  <p class="dash-section-title">Próximamente</p>
+  <div class="dash-qa">
+    <app-quick-action icon="history" label="Historial de pedidos" soon />
+    <app-quick-action icon="receipt_long" label="Mis facturas (PDF)" soon />
+    <app-quick-action icon="account_balance_wallet" label="Estado de cuenta" soon />
+    <app-quick-action icon="replay" label="Repetir último pedido" soon />
+    <app-quick-action icon="upload_file" label="Subir comprobante de pago" soon />
+  </div>
+</section>

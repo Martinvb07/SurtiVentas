@@ -16,6 +16,29 @@
             <div class="card-title">{{ order.orderNumber }}</div>
             <div class="card-subtitle">{{ order.customerName }}</div>
             <div class="card-amount numeric">{{ order.totalAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</div>
+
+            <button type="button" class="pick-toggle" (click)="toggleLines(order)">
+              <mat-icon>{{ isExpanded(order.id) ? 'expand_less' : 'inventory_2' }}</mat-icon>
+              {{ isExpanded(order.id) ? 'Ocultar productos' : 'Ver productos a alistar' }}
+            </button>
+            @if (isExpanded(order.id)) {
+              @if (isLoadingLines(order.id)) {
+                <div class="pick-loading">Cargando…</div>
+              } @else {
+                <ul class="pick-list">
+                  @for (line of orderLines(order.id); track line.id) {
+                    <li class="pick-line">
+                      <span class="pick-qty numeric">{{ line.quantity }}×</span>
+                      <span class="pick-name">{{ line.productName }}</span>
+                      <span class="pick-sku">{{ line.productSku }}</span>
+                    </li>
+                  } @empty {
+                    <li class="pick-empty">Sin líneas</li>
+                  }
+                </ul>
+              }
+            }
+
             <button mat-button class="card-action" (click)="startPicking(order)">
               <mat-icon>play_arrow</mat-icon>
               Iniciar alistamiento
@@ -38,6 +61,29 @@
             <div class="card-title">{{ order.orderNumber }}</div>
             <div class="card-subtitle">{{ order.customerName }}</div>
             <div class="card-amount numeric">{{ order.totalAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</div>
+
+            <button type="button" class="pick-toggle" (click)="toggleLines(order)">
+              <mat-icon>{{ isExpanded(order.id) ? 'expand_less' : 'inventory_2' }}</mat-icon>
+              {{ isExpanded(order.id) ? 'Ocultar productos' : 'Ver productos a alistar' }}
+            </button>
+            @if (isExpanded(order.id)) {
+              @if (isLoadingLines(order.id)) {
+                <div class="pick-loading">Cargando…</div>
+              } @else {
+                <ul class="pick-list">
+                  @for (line of orderLines(order.id); track line.id) {
+                    <li class="pick-line">
+                      <span class="pick-qty numeric">{{ line.quantity }}×</span>
+                      <span class="pick-name">{{ line.productName }}</span>
+                      <span class="pick-sku">{{ line.productSku }}</span>
+                    </li>
+                  } @empty {
+                    <li class="pick-empty">Sin líneas</li>
+                  }
+                </ul>
+              }
+            }
+
             <button mat-button class="card-action" (click)="finishPicking(order)">
               <mat-icon>inventory_2</mat-icon>
               Marcar alistado

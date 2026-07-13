@@ -1,0 +1,100 @@
+<section class="dash">
+  <header class="dash-head">
+    <div>
+      <h1 class="dash-title">Panel de Facturación</h1>
+      <p class="dash-sub">Cobro y cartera — {{ auth.currentUser()?.fullName }}</p>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="dash-loading">Cargando cartera…</div>
+  } @else if (data(); as d) {
+    <div class="dash-kpis">
+      <app-kpi-card icon="request_quote" tone="primary" label="Pedidos por facturar" [value]="d.ordersToBill" />
+      <app-kpi-card
+        icon="account_balance_wallet"
+        tone="warning"
+        label="Cartera total"
+        [value]="d.totalReceivables | currency: 'COP' : 'symbol-narrow' : '1.0-0'"
+      />
+      <app-kpi-card icon="gpp_bad" tone="danger" label="Clientes sobre su cupo" [value]="d.customersOverLimit" />
+      <app-kpi-card icon="paid" tone="success" label="Pagados este mes" [value]="d.paidThisMonth" />
+    </div>
+
+    <p class="dash-section-title">Acciones rápidas</p>
+    <div class="dash-qa">
+      <app-quick-action icon="point_of_sale" label="Por facturar" route="/app/billing/billable" />
+      <app-quick-action icon="account_balance_wallet" label="Cartera y facturas" route="/app/billing/invoices" />
+      <app-quick-action icon="storefront" label="Clientes y cartera" route="/app/customers" />
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-card dash-col-7">
+        <div class="dash-card-head">
+          <h2 class="dash-card-title">Cola de pedidos por facturar</h2>
+          <span class="dash-card-note">entregados</span>
+        </div>
+        @if (d.ordersToBillQueue.length) {
+          <div class="dash-list">
+            @for (o of d.ordersToBillQueue; track o.id) {
+              <div class="dash-list-row">
+                <div class="dash-list-main">
+                  <div class="dash-list-primary">{{ o.customerName }}</div>
+                  <div class="dash-list-secondary">{{ o.orderNumber }}</div>
+                </div>
+                <span class="dash-list-amount numeric">{{
+                  o.totalAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+                }}</span>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="dash-empty"><mat-icon>inbox</mat-icon>No hay pedidos entregados por facturar</div>
+        }
+      </div>
+
+      <div class="dash-card dash-col-5">
+        <div class="dash-card-head">
+          <h2 class="dash-card-title">Cartera por clasificación</h2>
+        </div>
+        <div class="dash-chart dash-chart--sm">
+          @if (classificationConfig(); as cfg) {
+            <app-chart [config]="cfg" />
+          } @else {
+            <div class="dash-empty"><mat-icon>bar_chart</mat-icon>Sin cartera registrada</div>
+          }
+        </div>
+      </div>
+
+      <div class="dash-card dash-col-12">
+        <div class="dash-card-head">
+          <h2 class="dash-card-title">Mayores deudores</h2>
+        </div>
+        @if (d.topDebtors.length) {
+          <div class="dash-list">
+            @for (c of d.topDebtors; track c.id) {
+              <div class="dash-list-row">
+                <div class="dash-list-main">
+                  <div class="dash-list-primary">{{ c.storeName }}</div>
+                  <div class="dash-list-secondary">
+                    Cupo: {{ c.creditLimit | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+                  </div>
+                </div>
+                @if (c.overLimit) {
+                  <span class="dash-chip is-danger">Sobre cupo</span>
+                }
+                <span class="dash-list-amount numeric">{{
+                  c.currentDebt | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+                }}</span>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="dash-empty"><mat-icon>check_circle</mat-icon>Ninguna tienda tiene deuda pendiente</div>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="dash-empty"><mat-icon>error_outline</mat-icon>No se pudo cargar la cartera.</div>
+  }
+</section>

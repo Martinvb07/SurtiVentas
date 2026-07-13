@@ -1,0 +1,12 @@
+<div class="kpi" [class]="'kpi--' + tone">
+  <span class="kpi__icon">
+    <mat-icon>{{ icon }}</mat-icon>
+  </span>
+  <div class="kpi__body">
+    <span class="kpi__value numeric">{{ value }}</span>
+    <span class="kpi__label">{{ label }}</span>
+    @if (hint) {
+      <span class="kpi__hint">{{ hint }}</span>
+    }
+  </div>
+</div>

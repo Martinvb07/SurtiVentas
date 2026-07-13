@@ -31,7 +31,7 @@ export const NAV_SECTIONS: NavSection[] = [
   {
     label: 'Gestión',
     entries: [
-      { label: 'Panel general', icon: 'space_dashboard', route: '/app', roles: ALL_ROLES },
+      { label: 'Mi panel', icon: 'space_dashboard', route: '/app', roles: ALL_ROLES },
     ],
   },
   {
@@ -65,6 +65,23 @@ export const NAV_SECTIONS: NavSection[] = [
         icon: 'directions_car',
         route: '/app/logistics/deliveries',
         roles: [Role.ADMINISTRADOR, Role.CONDUCTOR],
+      },
+    ],
+  },
+  {
+    label: 'Facturación',
+    entries: [
+      {
+        label: 'Por facturar',
+        icon: 'point_of_sale',
+        route: '/app/billing/billable',
+        roles: [Role.ADMINISTRADOR, Role.FACTURADOR],
+      },
+      {
+        label: 'Cartera y facturas',
+        icon: 'account_balance_wallet',
+        route: '/app/billing/invoices',
+        roles: [Role.ADMINISTRADOR, Role.FACTURADOR],
       },
     ],
   },

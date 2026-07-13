@@ -56,6 +56,7 @@
         } @else {
           <a
             class="nav-item"
+            [class.active]="isPanelHome(entry)"
             [routerLink]="entry.route"
             routerLinkActive="active"
             [routerLinkActiveOptions]="{ exact: entry.route === '/app' }"

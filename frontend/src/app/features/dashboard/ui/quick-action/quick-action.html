@@ -1,0 +1,13 @@
+@if (soon || !route) {
+  <div class="qa qa--soon">
+    <mat-icon class="qa__icon">{{ icon }}</mat-icon>
+    <span class="qa__label">{{ label }}</span>
+    <span class="qa__badge">Próximamente</span>
+  </div>
+} @else {
+  <a class="qa" [routerLink]="route">
+    <mat-icon class="qa__icon">{{ icon }}</mat-icon>
+    <span class="qa__label">{{ label }}</span>
+    <mat-icon class="qa__chevron">chevron_right</mat-icon>
+  </a>
+}
