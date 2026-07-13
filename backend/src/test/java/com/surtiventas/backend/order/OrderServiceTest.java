@@ -3,6 +3,7 @@ package com.surtiventas.backend.order;
 import com.surtiventas.backend.common.exception.ApiException;
 import com.surtiventas.backend.customer.Customer;
 import com.surtiventas.backend.customer.CustomerRepository;
+import com.surtiventas.backend.notification.NotificationService;
 import com.surtiventas.backend.order.dto.OrderCreateRequest;
 import com.surtiventas.backend.order.dto.OrderLineRequest;
 import com.surtiventas.backend.product.Product;
@@ -45,6 +46,8 @@ class OrderServiceTest {
     private ProductService productService;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private NotificationService notificationService;
 
     private OrderService orderService;
     private CustomUserDetails actingUser;
@@ -54,7 +57,7 @@ class OrderServiceTest {
     @BeforeEach
     void setUp() {
         orderService = new OrderService(orderRepository, historyRepository, new OrderStateMachine(),
-                customerRepository, productRepository, productService, userRepository);
+                customerRepository, productRepository, productService, userRepository, notificationService);
 
         User user = User.builder().id(1L).email("vendedor@surtiventas.com").fullName("Vendedor Uno")
                 .role(Role.VENDEDOR).active(true).build();

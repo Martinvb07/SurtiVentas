@@ -4,6 +4,7 @@ import com.surtiventas.backend.common.exception.ApiException;
 import com.surtiventas.backend.common.exception.ResourceNotFoundException;
 import com.surtiventas.backend.customer.Customer;
 import com.surtiventas.backend.customer.CustomerRepository;
+import com.surtiventas.backend.notification.NotificationService;
 import com.surtiventas.backend.order.dto.OrderCreateRequest;
 import com.surtiventas.backend.order.dto.OrderLineRequest;
 import com.surtiventas.backend.product.Product;
@@ -35,6 +36,7 @@ public class OrderService {
     private final ProductRepository productRepository;
     private final ProductService productService;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     public Page<Order> search(Long customerId, OrderStatus status, Long assignedDriverId, Pageable pageable) {
         return orderRepository.findAll(OrderSpecifications.withFilters(customerId, status, assignedDriverId), pageable);
@@ -114,6 +116,7 @@ public class OrderService {
         }
 
         recordHistory(order, currentStatus, targetStatus, user, note);
+        notificationService.onOrderTransition(order, currentStatus, targetStatus);
 
         return findById(order.getId());
     }

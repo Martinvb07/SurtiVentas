@@ -28,6 +28,11 @@ public class SecurityConfig {
     private static final String[] PUBLIC_ENDPOINTS = {
             "/api/auth/login",
             "/api/auth/refresh",
+            // The STOMP handshake itself is permitted; the WebSocket is
+            // authenticated at the STOMP CONNECT frame instead, because the
+            // browser WebSocket API can't set an Authorization header on the
+            // HTTP handshake.
+            "/ws/**",
             "/swagger-ui.html",
             "/swagger-ui/**",
             "/v3/api-docs/**",
