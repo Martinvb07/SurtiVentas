@@ -29,27 +29,35 @@ public class NotificationService {
 
     private final SimpMessagingTemplate messagingTemplate;
 
+    /** A brand-new order is waiting for the biller to review and invoice it. */
+    public void onOrderCreated(Order order) {
+        send(Role.FACTURADOR, "Nuevo pedido para facturar", order);
+    }
+
     public void onOrderTransition(Order order, OrderStatus from, OrderStatus to) {
         Target target = TARGETS.get(to);
         if (target == null) {
             return;
         }
+        send(target.role(), target.title(), order);
+    }
+
+    private void send(Role role, String title, Order order) {
         NotificationMessage notification = new NotificationMessage(
-                to.name(),
-                target.title(),
+                order.getStatus().name(),
+                title,
                 "Pedido " + order.getOrderNumber() + " — " + order.getCustomer().getStoreName(),
                 order.getId(),
                 order.getOrderNumber(),
                 Instant.now());
-        messagingTemplate.convertAndSend("/topic/notifications/" + target.role().name(), notification);
+        messagingTemplate.convertAndSend("/topic/notifications/" + role.name(), notification);
     }
 
     private static Map<OrderStatus, Target> buildTargets() {
         Map<OrderStatus, Target> targets = new EnumMap<>(OrderStatus.class);
-        targets.put(OrderStatus.PENDIENTE_APROBACION, new Target(Role.ADMINISTRADOR, "Pedido pendiente de aprobación"));
-        targets.put(OrderStatus.APROBADO, new Target(Role.BODEGUERO, "Pedido aprobado, listo para alistar"));
+        targets.put(OrderStatus.FACTURADO, new Target(Role.BODEGUERO, "Pedido facturado, listo para alistar"));
         targets.put(OrderStatus.ASIGNADO_RUTA, new Target(Role.CONDUCTOR, "Pedido asignado a tu ruta"));
-        targets.put(OrderStatus.ENTREGADO, new Target(Role.FACTURADOR, "Pedido entregado, listo para facturar"));
+        targets.put(OrderStatus.ENTREGADO, new Target(Role.FACTURADOR, "Pedido entregado, registrar pago"));
         targets.put(OrderStatus.NOVEDAD, new Target(Role.ADMINISTRADOR, "Novedad reportada en un pedido"));
         return targets;
     }

@@ -14,7 +14,20 @@ class PurchaseOrderStateMachineTest {
     @Test
     void allowsValidTransitionForPermittedRole() {
         assertThatCode(() ->
-                stateMachine.validate(PurchaseOrderStatus.BORRADOR, PurchaseOrderStatus.ENVIADA, Role.BODEGUERO))
+                stateMachine.validate(PurchaseOrderStatus.BORRADOR, PurchaseOrderStatus.ENVIADA, Role.FACTURADOR))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void warehouseMayMarkArrivalButOnlyAdminEntersInventory() {
+        assertThatCode(() ->
+                stateMachine.validate(PurchaseOrderStatus.ENVIADA, PurchaseOrderStatus.RECIBIDA, Role.BODEGUERO))
+                .doesNotThrowAnyException();
+        assertThatThrownBy(() ->
+                stateMachine.validate(PurchaseOrderStatus.RECIBIDA, PurchaseOrderStatus.INGRESADA, Role.BODEGUERO))
+                .isInstanceOf(BusinessRuleException.class);
+        assertThatCode(() ->
+                stateMachine.validate(PurchaseOrderStatus.RECIBIDA, PurchaseOrderStatus.INGRESADA, Role.ADMINISTRADOR))
                 .doesNotThrowAnyException();
     }
 

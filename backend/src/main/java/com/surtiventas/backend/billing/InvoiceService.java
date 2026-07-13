@@ -6,8 +6,10 @@ import com.surtiventas.backend.common.exception.ApiException;
 import com.surtiventas.backend.common.exception.ResourceNotFoundException;
 import com.surtiventas.backend.customer.CustomerService;
 import com.surtiventas.backend.order.Order;
+import com.surtiventas.backend.order.OrderLine;
 import com.surtiventas.backend.order.OrderService;
 import com.surtiventas.backend.order.OrderStatus;
+import com.surtiventas.backend.product.ProductService;
 import com.surtiventas.backend.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,6 +36,7 @@ public class InvoiceService {
     private final InvoiceRepository invoiceRepository;
     private final OrderService orderService;
     private final CustomerService customerService;
+    private final ProductService productService;
 
     public Page<Invoice> search(InvoiceStatus status, Long customerId, Boolean overdue, Pageable pageable) {
         return invoiceRepository.findAll(InvoiceSpecifications.withFilters(status, customerId, overdue), pageable);
@@ -51,15 +54,33 @@ public class InvoiceService {
     @Transactional
     public Invoice generate(GenerateInvoiceRequest request, CustomUserDetails actingUser) {
         Order order = orderService.findById(request.orderId());
-        if (order.getStatus() != OrderStatus.ENTREGADO) {
-            throw new ApiException(HttpStatus.CONFLICT, "Solo se pueden facturar pedidos entregados");
+        if (order.getStatus() != OrderStatus.CREADO) {
+            throw new ApiException(HttpStatus.CONFLICT, "Solo se pueden facturar pedidos recién tomados (aún sin facturar)");
         }
         if (invoiceRepository.existsByOrderId(order.getId())) {
             throw new ApiException(HttpStatus.CONFLICT, "El pedido ya tiene una factura");
         }
 
+        // Stock guard: block invoicing while any line would drive stock negative,
+        // until the admin enters the received merchandise into inventory.
+        for (OrderLine line : order.getLines()) {
+            if (line.getQuantity() > line.getProduct().getStock()) {
+                throw new ApiException(HttpStatus.CONFLICT,
+                        "No hay stock suficiente de " + line.getProduct().getName()
+                                + " (disponible " + line.getProduct().getStock()
+                                + ", requerido " + line.getQuantity()
+                                + "). Pídelo al proveedor y espera el ingreso del administrador.");
+            }
+        }
+
         // Advance the order into FACTURADO (validates role + writes audit history).
         orderService.transition(order.getId(), OrderStatus.FACTURADO, "Factura generada", null, actingUser);
+
+        // Generating the invoice commits the sale, so it decreases stock per line.
+        for (OrderLine line : order.getLines()) {
+            productService.adjustStock(line.getProduct().getId(), -line.getQuantity(),
+                    "Venta facturada — pedido " + order.getOrderNumber(), actingUser);
+        }
 
         Invoice invoice = Invoice.builder()
                 .invoiceNumber(generateInvoiceNumber())

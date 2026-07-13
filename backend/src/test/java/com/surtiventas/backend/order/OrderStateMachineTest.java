@@ -14,28 +14,28 @@ class OrderStateMachineTest {
     @Test
     void allowsValidTransitionForPermittedRole() {
         assertThatCode(() ->
-                stateMachine.validate(OrderStatus.CREADO, OrderStatus.PENDIENTE_APROBACION, Role.VENDEDOR))
+                stateMachine.validate(OrderStatus.CREADO, OrderStatus.FACTURADO, Role.FACTURADOR))
                 .doesNotThrowAnyException();
     }
 
     @Test
     void rejectsTransitionThatSkipsIntermediateStates() {
         assertThatThrownBy(() ->
-                stateMachine.validate(OrderStatus.CREADO, OrderStatus.FACTURADO, Role.VENDEDOR))
+                stateMachine.validate(OrderStatus.CREADO, OrderStatus.ALISTADO, Role.ADMINISTRADOR))
                 .isInstanceOf(BusinessRuleException.class);
     }
 
     @Test
     void rejectsTransitionAttemptedByRoleNotPermittedForIt() {
         assertThatThrownBy(() ->
-                stateMachine.validate(OrderStatus.CREADO, OrderStatus.PENDIENTE_APROBACION, Role.BODEGUERO))
+                stateMachine.validate(OrderStatus.CREADO, OrderStatus.FACTURADO, Role.BODEGUERO))
                 .isInstanceOf(BusinessRuleException.class);
     }
 
     @Test
     void administradorMayPerformAnyStructurallyValidTransition() {
         assertThatCode(() ->
-                stateMachine.validate(OrderStatus.APROBADO, OrderStatus.EN_ALISTAMIENTO, Role.ADMINISTRADOR))
+                stateMachine.validate(OrderStatus.FACTURADO, OrderStatus.EN_ALISTAMIENTO, Role.ADMINISTRADOR))
                 .doesNotThrowAnyException();
     }
 

@@ -45,13 +45,13 @@ class PurchaseOrderServiceTest {
         purchaseOrderService = new PurchaseOrderService(purchaseOrderRepository, historyRepository,
                 new PurchaseOrderStateMachine(), supplierRepository, productRepository, productService);
 
-        User user = User.builder().id(1L).email("bodeguero@surtiventas.com").fullName("Bodeguero Uno")
-                .role(Role.BODEGUERO).active(true).build();
+        User user = User.builder().id(1L).email("admin@surtiventas.com").fullName("Admin Uno")
+                .role(Role.ADMINISTRADOR).active(true).build();
         actingUser = new CustomUserDetails(user);
     }
 
     @Test
-    void receivingAPurchaseOrderAdjustsStockForEveryLine() {
+    void enteringAPurchaseOrderIntoInventoryAdjustsStockForEveryLine() {
         Product productA = Product.builder().id(10L).sku("A").name("Producto A").price(BigDecimal.TEN).build();
         Product productB = Product.builder().id(11L).sku("B").name("Producto B").price(BigDecimal.TEN).build();
 
@@ -59,7 +59,7 @@ class PurchaseOrderServiceTest {
                 .id(50L)
                 .orderNumber("OC-1")
                 .supplier(Supplier.builder().id(1L).name("Proveedor X").build())
-                .status(PurchaseOrderStatus.ENVIADA)
+                .status(PurchaseOrderStatus.RECIBIDA)
                 .createdBy(actingUser.getUser())
                 .build();
         purchaseOrder.addLine(PurchaseOrderLine.builder().product(productA).quantity(5)
@@ -70,7 +70,7 @@ class PurchaseOrderServiceTest {
         when(purchaseOrderRepository.findWithAssociationsById(50L)).thenReturn(Optional.of(purchaseOrder));
         when(purchaseOrderRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
-        purchaseOrderService.transition(50L, PurchaseOrderStatus.RECIBIDA, "Mercancia recibida", actingUser);
+        purchaseOrderService.transition(50L, PurchaseOrderStatus.INGRESADA, "Ingreso a inventario", actingUser);
 
         verify(productService).adjustStock(eq(10L), eq(5), any(), eq(actingUser));
         verify(productService).adjustStock(eq(11L), eq(3), any(), eq(actingUser));

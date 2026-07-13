@@ -33,10 +33,10 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long>, JpaSpec
             "where i.id = :id")
     Optional<Invoice> findDetailById(@Param("id") Long id);
 
-    /** Delivered orders that don't have an invoice yet (the "por facturar" queue). */
+    /** Freshly taken orders (CREADO) that don't have an invoice yet — the biller's queue. */
     @Query("select o from Order o join fetch o.customer " +
-            "where o.status = com.surtiventas.backend.order.OrderStatus.ENTREGADO " +
+            "where o.status = com.surtiventas.backend.order.OrderStatus.CREADO " +
             "and not exists (select 1 from Invoice i where i.order = o) " +
-            "order by o.updatedAt asc")
+            "order by o.createdAt asc")
     List<Order> findBillableOrders();
 }

@@ -52,8 +52,7 @@ public class DashboardService {
     /** Orders that are still moving through the pipeline (not terminal). */
     private static final List<OrderStatus> IN_PROGRESS = List.of(
             OrderStatus.CREADO,
-            OrderStatus.PENDIENTE_APROBACION,
-            OrderStatus.APROBADO,
+            OrderStatus.FACTURADO,
             OrderStatus.EN_ALISTAMIENTO,
             OrderStatus.ALISTADO,
             OrderStatus.ASIGNADO_RUTA);
@@ -117,7 +116,7 @@ public class DashboardService {
         Map<OrderStatus, Long> counts = statusCountMap(orderRepository.countGroupedByStatus());
 
         List<StatusCount> funnel = List.of(
-                statusCount(OrderStatus.APROBADO, counts),
+                statusCount(OrderStatus.FACTURADO, counts),
                 statusCount(OrderStatus.EN_ALISTAMIENTO, counts),
                 statusCount(OrderStatus.ALISTADO, counts),
                 statusCount(OrderStatus.ASIGNADO_RUTA, counts));
@@ -127,7 +126,7 @@ public class DashboardService {
                 .toList();
 
         return new WarehouseDashboardResponse(
-                counts.getOrDefault(OrderStatus.APROBADO, 0L),
+                counts.getOrDefault(OrderStatus.FACTURADO, 0L),
                 counts.getOrDefault(OrderStatus.EN_ALISTAMIENTO, 0L),
                 counts.getOrDefault(OrderStatus.ALISTADO, 0L),
                 productRepository.countLowStock(),
@@ -172,12 +171,12 @@ public class DashboardService {
                 .toList();
 
         List<RecentOrder> toBillQueue = orderRepository
-                .findByStatusInFetchCustomer(List.of(OrderStatus.ENTREGADO), PageRequest.of(0, 10)).stream()
+                .findByStatusInFetchCustomer(List.of(OrderStatus.CREADO), PageRequest.of(0, 10)).stream()
                 .map(this::toRecentOrder)
                 .toList();
 
         return new BillingDashboardResponse(
-                orderRepository.countByStatusIn(List.of(OrderStatus.ENTREGADO)),
+                orderRepository.countByStatusIn(List.of(OrderStatus.CREADO)),
                 customerRepository.sumReceivables(),
                 customerRepository.countOverCreditLimit(),
                 orderRepository.countByStatusAndUpdatedAtGreaterThanEqual(OrderStatus.PAGADO, startOfMonth),

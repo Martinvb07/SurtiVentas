@@ -35,7 +35,7 @@ public class SupplierController {
     private final SupplierMapper supplierMapper;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'BODEGUERO')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'FACTURADOR')")
     public ResponseEntity<Page<SupplierResponse>> search(
             @RequestParam(required = false) Boolean active,
             @RequestParam(required = false) String search,
@@ -45,7 +45,7 @@ public class SupplierController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'BODEGUERO')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'FACTURADOR')")
     public ResponseEntity<SupplierResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(supplierMapper.toResponse(supplierService.findById(id)));
     }
@@ -72,7 +72,7 @@ public class SupplierController {
     }
 
     @GetMapping("/{id}/products")
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'BODEGUERO')")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'FACTURADOR')")
     public ResponseEntity<List<SupplierProductResponse>> getProducts(@PathVariable Long id) {
         List<SupplierProductResponse> products = supplierService.getSupplierProducts(id).stream()
                 .map(supplierMapper::toResponse)

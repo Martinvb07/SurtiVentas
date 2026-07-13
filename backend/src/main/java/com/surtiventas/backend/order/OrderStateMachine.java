@@ -24,34 +24,32 @@ public class OrderStateMachine {
     private final Map<TransitionKey, Set<Role>> transitionRoles = new java.util.HashMap<>();
 
     public OrderStateMachine() {
-        allow(OrderStatus.CREADO, EnumSet.of(OrderStatus.PENDIENTE_APROBACION, OrderStatus.CANCELADO));
-        allow(OrderStatus.PENDIENTE_APROBACION, EnumSet.of(OrderStatus.APROBADO, OrderStatus.CANCELADO));
-        allow(OrderStatus.APROBADO, EnumSet.of(OrderStatus.EN_ALISTAMIENTO, OrderStatus.CANCELADO));
+        // New flow: the seller's order goes straight to the biller, who invoices
+        // it (committing stock) before the warehouse picks it and the driver
+        // delivers it. There is no admin-approval step (PENDIENTE_APROBACION /
+        // APROBADO remain in the enum for legacy rows but are out of the flow).
+        allow(OrderStatus.CREADO, EnumSet.of(OrderStatus.FACTURADO, OrderStatus.CANCELADO));
+        allow(OrderStatus.FACTURADO, EnumSet.of(OrderStatus.EN_ALISTAMIENTO, OrderStatus.CANCELADO));
         allow(OrderStatus.EN_ALISTAMIENTO, EnumSet.of(OrderStatus.ALISTADO));
         allow(OrderStatus.ALISTADO, EnumSet.of(OrderStatus.ASIGNADO_RUTA));
         allow(OrderStatus.ASIGNADO_RUTA, EnumSet.of(OrderStatus.ENTREGADO, OrderStatus.NOVEDAD));
         allow(OrderStatus.NOVEDAD, EnumSet.of(OrderStatus.ASIGNADO_RUTA, OrderStatus.CANCELADO));
-        allow(OrderStatus.ENTREGADO, EnumSet.of(OrderStatus.FACTURADO));
-        allow(OrderStatus.FACTURADO, EnumSet.of(OrderStatus.PAGADO, OrderStatus.CARTERA_PENDIENTE));
+        allow(OrderStatus.ENTREGADO, EnumSet.of(OrderStatus.PAGADO, OrderStatus.CARTERA_PENDIENTE));
         allow(OrderStatus.CARTERA_PENDIENTE, EnumSet.of(OrderStatus.PAGADO));
         allow(OrderStatus.PAGADO, EnumSet.noneOf(OrderStatus.class));
         allow(OrderStatus.CANCELADO, EnumSet.noneOf(OrderStatus.class));
 
-        allowRoles(OrderStatus.CREADO, OrderStatus.PENDIENTE_APROBACION, Role.VENDEDOR);
+        allowRoles(OrderStatus.CREADO, OrderStatus.FACTURADO, Role.FACTURADOR);
         allowRoles(OrderStatus.CREADO, OrderStatus.CANCELADO, Role.VENDEDOR);
-        allowRoles(OrderStatus.PENDIENTE_APROBACION, OrderStatus.APROBADO, Role.ADMINISTRADOR);
-        allowRoles(OrderStatus.PENDIENTE_APROBACION, OrderStatus.CANCELADO, Role.ADMINISTRADOR);
-        allowRoles(OrderStatus.APROBADO, OrderStatus.EN_ALISTAMIENTO, Role.BODEGUERO);
-        allowRoles(OrderStatus.APROBADO, OrderStatus.CANCELADO, Role.ADMINISTRADOR);
+        allowRoles(OrderStatus.FACTURADO, OrderStatus.EN_ALISTAMIENTO, Role.BODEGUERO);
+        // FACTURADO -> CANCELADO and NOVEDAD -> CANCELADO are admin-only (bypass).
         allowRoles(OrderStatus.EN_ALISTAMIENTO, OrderStatus.ALISTADO, Role.BODEGUERO);
         allowRoles(OrderStatus.ALISTADO, OrderStatus.ASIGNADO_RUTA, Role.BODEGUERO);
         allowRoles(OrderStatus.ASIGNADO_RUTA, OrderStatus.ENTREGADO, Role.CONDUCTOR);
         allowRoles(OrderStatus.ASIGNADO_RUTA, OrderStatus.NOVEDAD, Role.CONDUCTOR);
         allowRoles(OrderStatus.NOVEDAD, OrderStatus.ASIGNADO_RUTA, Role.BODEGUERO);
-        allowRoles(OrderStatus.NOVEDAD, OrderStatus.CANCELADO, Role.ADMINISTRADOR);
-        allowRoles(OrderStatus.ENTREGADO, OrderStatus.FACTURADO, Role.FACTURADOR);
-        allowRoles(OrderStatus.FACTURADO, OrderStatus.PAGADO, Role.FACTURADOR);
-        allowRoles(OrderStatus.FACTURADO, OrderStatus.CARTERA_PENDIENTE, Role.FACTURADOR);
+        allowRoles(OrderStatus.ENTREGADO, OrderStatus.PAGADO, Role.FACTURADOR);
+        allowRoles(OrderStatus.ENTREGADO, OrderStatus.CARTERA_PENDIENTE, Role.FACTURADOR);
         allowRoles(OrderStatus.CARTERA_PENDIENTE, OrderStatus.PAGADO, Role.FACTURADOR);
     }
 

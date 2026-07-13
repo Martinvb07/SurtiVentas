@@ -28,7 +28,7 @@ import java.util.List;
 @RequestMapping("/api/purchase-orders")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearerAuth")
-@PreAuthorize("hasAnyRole('ADMINISTRADOR', 'BODEGUERO')")
+@PreAuthorize("hasAnyRole('ADMINISTRADOR', 'FACTURADOR', 'BODEGUERO')")
 public class PurchaseOrderController {
 
     private final PurchaseOrderService purchaseOrderService;
@@ -58,6 +58,7 @@ public class PurchaseOrderController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'FACTURADOR')")
     public ResponseEntity<PurchaseOrderResponse> create(@Valid @RequestBody PurchaseOrderCreateRequest request,
                                                           @AuthenticationPrincipal CustomUserDetails actingUser) {
         PurchaseOrder purchaseOrder = purchaseOrderService.create(request, actingUser);

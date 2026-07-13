@@ -4,5 +4,6 @@ public enum PurchaseOrderStatus {
     BORRADOR,
     ENVIADA,
     RECIBIDA,
+    INGRESADA,
     CANCELADA
 }

@@ -9,7 +9,6 @@ import com.surtiventas.backend.order.dto.OrderCreateRequest;
 import com.surtiventas.backend.order.dto.OrderLineRequest;
 import com.surtiventas.backend.product.Product;
 import com.surtiventas.backend.product.ProductRepository;
-import com.surtiventas.backend.product.ProductService;
 import com.surtiventas.backend.security.CustomUserDetails;
 import com.surtiventas.backend.user.Role;
 import com.surtiventas.backend.user.User;
@@ -34,7 +33,6 @@ public class OrderService {
     private final OrderStateMachine orderStateMachine;
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
-    private final ProductService productService;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
 
@@ -72,10 +70,8 @@ public class OrderService {
         for (OrderLineRequest lineRequest : request.lines()) {
             Product product = productRepository.findById(lineRequest.productId())
                     .orElseThrow(() -> new ResourceNotFoundException("Product not found: " + lineRequest.productId()));
-            if (lineRequest.quantity() > product.getStock()) {
-                throw new ApiException(HttpStatus.CONFLICT,
-                        "Stock insuficiente para " + product.getName() + " (disponible: " + product.getStock() + ")");
-            }
+            // No stock check here on purpose: the seller can take the order even
+            // without stock; procurement + the stock guard happen at invoicing.
             BigDecimal subtotal = product.getPrice().multiply(BigDecimal.valueOf(lineRequest.quantity()));
             total = total.add(subtotal);
 
@@ -91,6 +87,7 @@ public class OrderService {
 
         order = orderRepository.save(order);
         recordHistory(order, null, OrderStatus.CREADO, user, "Pedido creado");
+        notificationService.onOrderCreated(order);
 
         return findById(order.getId());
     }
@@ -111,30 +108,10 @@ public class OrderService {
         order.setStatus(targetStatus);
         order = orderRepository.save(order);
 
-        if (targetStatus == OrderStatus.ALISTADO) {
-            pickInventory(order, actingUser);
-        }
-
         recordHistory(order, currentStatus, targetStatus, user, note);
         notificationService.onOrderTransition(order, currentStatus, targetStatus);
 
         return findById(order.getId());
-    }
-
-    /**
-     * Marking a pedido as ALISTADO means the picked quantities have been
-     * confirmed and packed, so this drives an audited stock decrease per
-     * line through ProductService, mirroring how PurchaseOrderService
-     * increases stock when a purchase order is RECIBIDA.
-     */
-    private void pickInventory(Order order, CustomUserDetails actingUser) {
-        for (OrderLine line : order.getLines()) {
-            productService.adjustStock(
-                    line.getProduct().getId(),
-                    -line.getQuantity(),
-                    "Alistamiento pedido " + order.getOrderNumber(),
-                    actingUser);
-        }
     }
 
     private User resolveDriver(Long driverId) {

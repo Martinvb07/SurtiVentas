@@ -95,8 +95,8 @@ public class PurchaseOrderService {
         purchaseOrder.setStatus(targetStatus);
         purchaseOrder = purchaseOrderRepository.save(purchaseOrder);
 
-        if (targetStatus == PurchaseOrderStatus.RECIBIDA) {
-            receiveGoods(purchaseOrder, actingUser);
+        if (targetStatus == PurchaseOrderStatus.INGRESADA) {
+            enterGoodsIntoInventory(purchaseOrder, actingUser);
         }
 
         recordHistory(purchaseOrder, currentStatus, targetStatus, user, note);
@@ -105,16 +105,17 @@ public class PurchaseOrderService {
     }
 
     /**
-     * Marking a purchase order as RECIBIDA drives an audited stock entry per
-     * line through ProductService, reusing the same stock_movement ledger
-     * the inventory module writes to for manual adjustments.
+     * The admin entering a RECIBIDA order into inventory (INGRESADA) drives an
+     * audited stock entry per line through ProductService, reusing the same
+     * stock_movement ledger the inventory module writes to. The warehouse's
+     * earlier RECIBIDA step only records physical arrival, without touching stock.
      */
-    private void receiveGoods(PurchaseOrder purchaseOrder, CustomUserDetails actingUser) {
+    private void enterGoodsIntoInventory(PurchaseOrder purchaseOrder, CustomUserDetails actingUser) {
         for (PurchaseOrderLine line : purchaseOrder.getLines()) {
             productService.adjustStock(
                     line.getProduct().getId(),
                     line.getQuantity(),
-                    "Recepción de mercancía OC " + purchaseOrder.getOrderNumber(),
+                    "Ingreso a inventario OC " + purchaseOrder.getOrderNumber(),
                     actingUser);
         }
     }
