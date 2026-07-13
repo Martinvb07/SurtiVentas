@@ -24,4 +24,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long>, JpaSp
 
     @Query("select c from Customer c where c.active = true and c.currentDebt > 0 order by c.currentDebt desc")
     List<Customer> findTopDebtors(Pageable pageable);
+
+    @Query("select c from Customer c where c.active = true and c.latitude is not null and c.longitude is not null")
+    List<Customer> findWithCoordinates();
 }
