@@ -44,6 +44,10 @@ export const routes: Routes = [
         path: 'billing',
         loadChildren: () => import('./features/billing/billing.routes').then((m) => m.BILLING_ROUTES),
       },
+      {
+        path: 'portal',
+        loadChildren: () => import('./features/portal/portal.routes').then((m) => m.PORTAL_ROUTES),
+      },
     ],
   },
   { path: '**', redirectTo: 'login' },

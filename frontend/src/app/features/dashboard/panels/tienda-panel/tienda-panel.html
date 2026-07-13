@@ -2,29 +2,78 @@
   <header class="dash-head">
     <div>
       <h1 class="dash-title">Portal de mi tienda</h1>
-      <p class="dash-sub">Autoservicio — {{ auth.currentUser()?.fullName }}</p>
+      <p class="dash-sub">{{ summary()?.storeName ?? auth.currentUser()?.fullName }}</p>
     </div>
+    <button mat-flat-button color="primary" (click)="repeatLast()" [disabled]="repeating() || loading()">
+      <mat-icon>replay</mat-icon>
+      {{ repeating() ? 'Creando…' : 'Repetir último pedido' }}
+    </button>
   </header>
 
-  <div class="dash-card dash-col-12">
-    <div class="dash-card-head">
-      <h2 class="dash-card-title">Bienvenido a tu portal</h2>
+  @if (loading()) {
+    <div class="dash-loading">Cargando tu cuenta…</div>
+  } @else if (summary(); as s) {
+    <div class="dash-kpis">
+      <app-kpi-card
+        icon="account_balance_wallet"
+        [tone]="s.currentDebt > 0 ? 'warning' : 'success'"
+        label="Saldo actual"
+        [value]="s.currentDebt | currency: 'COP' : 'symbol-narrow' : '1.0-0'"
+      />
+      <app-kpi-card
+        icon="credit_score"
+        [tone]="s.overLimit ? 'danger' : 'neutral'"
+        label="Cupo disponible"
+        [value]="s.availableCredit | currency: 'COP' : 'symbol-narrow' : '1.0-0'"
+        [hint]="s.overLimit ? 'Estás sobre tu cupo' : undefined"
+      />
+      <app-kpi-card
+        icon="receipt_long"
+        [tone]="s.overdueInvoices > 0 ? 'danger' : 'primary'"
+        label="Facturas pendientes"
+        [value]="s.pendingInvoices"
+        [hint]="s.overdueInvoices > 0 ? s.overdueInvoices + ' vencida(s)' : undefined"
+      />
+      <app-kpi-card icon="shopping_bag" tone="neutral" label="Pedidos totales" [value]="s.totalOrders" />
     </div>
-    <div class="dash-empty">
-      <mat-icon>storefront</mat-icon>
-      <p style="max-width: 460px; line-height: 1.55">
-        Aquí podrás consultar tus pedidos y facturas, revisar tu estado de cuenta, repetir tu último
-        pedido y subir comprobantes de pago. Estas funciones se habilitan en la siguiente fase.
-      </p>
-    </div>
-  </div>
 
-  <p class="dash-section-title">Próximamente</p>
-  <div class="dash-qa">
-    <app-quick-action icon="history" label="Historial de pedidos" soon />
-    <app-quick-action icon="receipt_long" label="Mis facturas (PDF)" soon />
-    <app-quick-action icon="account_balance_wallet" label="Estado de cuenta" soon />
-    <app-quick-action icon="replay" label="Repetir último pedido" soon />
-    <app-quick-action icon="upload_file" label="Subir comprobante de pago" soon />
-  </div>
+    <p class="dash-section-title">Acciones</p>
+    <div class="dash-qa">
+      <app-quick-action icon="shopping_cart" label="Mis pedidos" route="/app/portal/orders" />
+      <app-quick-action icon="receipt_long" label="Mis facturas" route="/app/portal/invoices" />
+      <app-quick-action icon="picture_as_pdf" label="Descargar facturas (PDF)" soon />
+      <app-quick-action icon="upload_file" label="Subir comprobante de pago" soon />
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-card dash-col-12">
+        <div class="dash-card-head">
+          <h2 class="dash-card-title">Pedidos recientes</h2>
+          @if (s.nextDueDate) {
+            <span class="dash-card-note">Próximo vencimiento: {{ s.nextDueDate | date: 'dd/MM/yyyy' }}</span>
+          }
+        </div>
+        @if (recentOrders().length) {
+          <div class="dash-list">
+            @for (o of recentOrders(); track o.id) {
+              <div class="dash-list-row">
+                <div class="dash-list-main">
+                  <div class="dash-list-primary">{{ o.orderNumber }}</div>
+                  <div class="dash-list-secondary">{{ o.createdAt | date: 'dd/MM/yyyy' }}</div>
+                </div>
+                <span class="dash-chip" [class]="'is-' + statusTone(o.status)">{{ statusLabel(o.status) }}</span>
+                <span class="dash-list-amount numeric">{{
+                  o.totalAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+                }}</span>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="dash-empty"><mat-icon>inbox</mat-icon>Tu tienda aún no tiene pedidos</div>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="dash-empty"><mat-icon>error_outline</mat-icon>No se pudo cargar tu cuenta.</div>
+  }
 </section>

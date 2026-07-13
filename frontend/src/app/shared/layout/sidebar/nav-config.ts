@@ -86,6 +86,23 @@ export const NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
+    label: 'Mi tienda',
+    entries: [
+      {
+        label: 'Mis pedidos',
+        icon: 'shopping_cart',
+        route: '/app/portal/orders',
+        roles: [Role.COMPRADOR],
+      },
+      {
+        label: 'Mis facturas',
+        icon: 'receipt_long',
+        route: '/app/portal/invoices',
+        roles: [Role.COMPRADOR],
+      },
+    ],
+  },
+  {
     label: 'Catálogo',
     entries: [
       {
