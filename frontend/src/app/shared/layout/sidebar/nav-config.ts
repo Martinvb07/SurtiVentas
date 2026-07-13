@@ -145,19 +145,19 @@ export const NAV_SECTIONS: NavSection[] = [
       {
         label: 'Compras',
         icon: 'local_shipping',
-        roles: [Role.ADMINISTRADOR, Role.BODEGUERO],
+        roles: [Role.ADMINISTRADOR, Role.FACTURADOR, Role.BODEGUERO],
         items: [
           {
             label: 'Proveedores',
             icon: 'storefront',
             route: '/app/suppliers',
-            roles: [Role.ADMINISTRADOR, Role.BODEGUERO],
+            roles: [Role.ADMINISTRADOR, Role.FACTURADOR],
           },
           {
             label: 'Órdenes de compra',
             icon: 'receipt_long',
             route: '/app/purchase-orders',
-            roles: [Role.ADMINISTRADOR, Role.BODEGUERO],
+            roles: [Role.ADMINISTRADOR, Role.FACTURADOR, Role.BODEGUERO],
           },
         ],
       },

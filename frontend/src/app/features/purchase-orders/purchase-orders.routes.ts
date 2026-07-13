@@ -6,6 +6,6 @@ export const PURCHASE_ORDERS_ROUTES: Routes = [
   {
     path: '',
     loadComponent: () => import('./purchase-order-list/purchase-order-list').then((m) => m.PurchaseOrderList),
-    canActivate: [roleGuard([Role.ADMINISTRADOR, Role.BODEGUERO])],
+    canActivate: [roleGuard([Role.ADMINISTRADOR, Role.FACTURADOR, Role.BODEGUERO])],
   },
 ];

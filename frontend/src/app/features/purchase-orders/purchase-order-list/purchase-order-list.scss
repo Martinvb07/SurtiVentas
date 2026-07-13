@@ -75,6 +75,11 @@
   }
 
   &.status-RECIBIDA {
+    background: var(--sv-warning-bg);
+    color: var(--sv-warning-ink);
+  }
+
+  &.status-INGRESADA {
     background: var(--sv-success-bg);
     color: var(--sv-success);
   }

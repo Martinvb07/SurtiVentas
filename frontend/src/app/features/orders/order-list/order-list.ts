@@ -59,8 +59,6 @@ export class OrderList {
     return role === Role.ADMINISTRADOR || role === Role.VENDEDOR;
   });
 
-  protected readonly canApprove = computed(() => this.authService.currentUser()?.role === Role.ADMINISTRADOR);
-
   constructor() {
     effect(() => {
       const params = { page: this.pageIndex(), size: this.pageSize(), status: this.status() };
@@ -100,14 +98,6 @@ export class OrderList {
     this.ordersService.getById(order.id).subscribe((full) => {
       this.dialog.open(OrderDetailDialog, { width: '560px', data: { order: full } });
     });
-  }
-
-  protected submitForApproval(order: Order): void {
-    this.openTransitionDialog(order, 'PENDIENTE_APROBACION', 'Enviar a aprobación', 'Enviar');
-  }
-
-  protected approve(order: Order): void {
-    this.openTransitionDialog(order, 'APROBADO', 'Aprobar pedido', 'Aprobar');
   }
 
   protected cancel(order: Order): void {

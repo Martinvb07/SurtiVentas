@@ -4,7 +4,7 @@
       <h1>Órdenes de compra</h1>
       <p class="subtitle">{{ totalElements() }} orden(es)</p>
     </div>
-    @if (canManage()) {
+    @if (canManageOrder()) {
       <button mat-flat-button class="new-button" (click)="openCreateDialog()">
         <mat-icon>add</mat-icon>
         Nueva orden
@@ -20,6 +20,7 @@
         <mat-option value="BORRADOR">Borrador</mat-option>
         <mat-option value="ENVIADA">Enviada</mat-option>
         <mat-option value="RECIBIDA">Recibida</mat-option>
+        <mat-option value="INGRESADA">Ingresada</mat-option>
         <mat-option value="CANCELADA">Cancelada</mat-option>
       </mat-select>
     </mat-form-field>
@@ -65,19 +66,25 @@
               <mat-icon>visibility</mat-icon>
               <span>Ver detalle</span>
             </button>
-            @if (canManage() && po.status === 'BORRADOR') {
+            @if (canManageOrder() && po.status === 'BORRADOR') {
               <button mat-menu-item (click)="send(po)">
                 <mat-icon>send</mat-icon>
-                <span>Enviar</span>
+                <span>Enviar al proveedor</span>
               </button>
             }
-            @if (canManage() && po.status === 'ENVIADA') {
+            @if (canReceive() && po.status === 'ENVIADA') {
               <button mat-menu-item (click)="receive(po)">
                 <mat-icon>inventory</mat-icon>
-                <span>Recibir mercancía</span>
+                <span>Marcar recibida</span>
               </button>
             }
-            @if (canManage() && (po.status === 'BORRADOR' || po.status === 'ENVIADA')) {
+            @if (canIngest() && po.status === 'RECIBIDA') {
+              <button mat-menu-item (click)="ingest(po)">
+                <mat-icon>add_box</mat-icon>
+                <span>Ingresar al inventario</span>
+              </button>
+            }
+            @if (canManageOrder() && (po.status === 'BORRADOR' || po.status === 'ENVIADA')) {
               <button mat-menu-item (click)="cancel(po)">
                 <mat-icon>block</mat-icon>
                 <span>Cancelar</span>

@@ -65,23 +65,9 @@
               <span>Ver detalle</span>
             </button>
             @if (canCreate() && o.status === 'CREADO') {
-              <button mat-menu-item (click)="submitForApproval(o)">
-                <mat-icon>send</mat-icon>
-                <span>Enviar a aprobación</span>
-              </button>
               <button mat-menu-item (click)="cancel(o)">
                 <mat-icon>block</mat-icon>
                 <span>Cancelar</span>
-              </button>
-            }
-            @if (canApprove() && o.status === 'PENDIENTE_APROBACION') {
-              <button mat-menu-item (click)="approve(o)">
-                <mat-icon>check_circle</mat-icon>
-                <span>Aprobar</span>
-              </button>
-              <button mat-menu-item (click)="cancel(o)">
-                <mat-icon>block</mat-icon>
-                <span>Rechazar</span>
               </button>
             }
           </mat-menu>

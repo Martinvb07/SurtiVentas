@@ -49,10 +49,18 @@ export class PurchaseOrderList {
   protected readonly totalElements = signal(0);
   protected readonly loading = signal(false);
 
-  protected readonly canManage = computed(() => {
+  // Only the biller (and admin) orders/sends/cancels purchase orders.
+  protected readonly canManageOrder = computed(() => {
+    const role = this.authService.currentUser()?.role;
+    return role === Role.ADMINISTRADOR || role === Role.FACTURADOR;
+  });
+  // The warehouse marks physical arrival (no stock change).
+  protected readonly canReceive = computed(() => {
     const role = this.authService.currentUser()?.role;
     return role === Role.ADMINISTRADOR || role === Role.BODEGUERO;
   });
+  // Only the admin enters the goods into inventory (stock increase).
+  protected readonly canIngest = computed(() => this.authService.currentUser()?.role === Role.ADMINISTRADOR);
 
   constructor() {
     effect(() => {
@@ -100,7 +108,11 @@ export class PurchaseOrderList {
   }
 
   protected receive(purchaseOrder: PurchaseOrder): void {
-    this.openTransitionDialog(purchaseOrder, 'RECIBIDA', 'Recibir mercancía', 'Confirmar recepción');
+    this.openTransitionDialog(purchaseOrder, 'RECIBIDA', 'Confirmar llegada de mercancía', 'Marcar recibida');
+  }
+
+  protected ingest(purchaseOrder: PurchaseOrder): void {
+    this.openTransitionDialog(purchaseOrder, 'INGRESADA', 'Ingresar al inventario', 'Ingresar al inventario');
   }
 
   protected cancel(purchaseOrder: PurchaseOrder): void {

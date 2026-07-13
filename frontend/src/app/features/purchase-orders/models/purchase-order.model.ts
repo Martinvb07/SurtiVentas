@@ -1,4 +1,4 @@
-export type PurchaseOrderStatus = 'BORRADOR' | 'ENVIADA' | 'RECIBIDA' | 'CANCELADA';
+export type PurchaseOrderStatus = 'BORRADOR' | 'ENVIADA' | 'RECIBIDA' | 'INGRESADA' | 'CANCELADA';
 
 export interface PurchaseOrderLine {
   id: number;

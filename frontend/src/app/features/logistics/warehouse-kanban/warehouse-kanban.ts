@@ -106,7 +106,7 @@ export class WarehouseKanban {
   private refresh(): void {
     this.loading.set(true);
     forkJoin({
-      approved: this.ordersService.search({ status: 'APROBADO', size: 50 }),
+      approved: this.ordersService.search({ status: 'FACTURADO', size: 50 }),
       picking: this.ordersService.search({ status: 'EN_ALISTAMIENTO', size: 50 }),
       packed: this.ordersService.search({ status: 'ALISTADO', size: 50 }),
       dispatched: this.ordersService.search({ status: 'ASIGNADO_RUTA', size: 50 }),
