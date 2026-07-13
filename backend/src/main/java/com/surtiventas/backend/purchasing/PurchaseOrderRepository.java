@@ -11,6 +11,8 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, Lo
 
     boolean existsByOrderNumber(String orderNumber);
 
+    long countByStatus(PurchaseOrderStatus status);
+
     @Query("select distinct po from PurchaseOrder po " +
             "join fetch po.supplier " +
             "left join fetch po.lines l " +
