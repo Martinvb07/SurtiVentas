@@ -45,7 +45,7 @@ class OrderServiceTest {
 
     private OrderService orderService;
     private CustomUserDetails actingUser;
-    private CustomUserDetails bodegueroUser;
+    private CustomUserDetails adminUser;
     private Customer customer;
 
     @BeforeEach
@@ -57,9 +57,9 @@ class OrderServiceTest {
                 .role(Role.VENDEDOR).active(true).build();
         actingUser = new CustomUserDetails(user);
 
-        User bodeguero = User.builder().id(2L).email("bodeguero@surtiventas.com").fullName("Bodeguero Uno")
-                .role(Role.BODEGUERO).active(true).build();
-        bodegueroUser = new CustomUserDetails(bodeguero);
+        User admin = User.builder().id(2L).email("admin@surtiventas.com").fullName("Admin Uno")
+                .role(Role.ADMINISTRADOR).active(true).build();
+        adminUser = new CustomUserDetails(admin);
 
         customer = Customer.builder().id(20L).storeName("Tienda X").active(true).build();
     }
@@ -99,7 +99,7 @@ class OrderServiceTest {
 
         when(orderRepository.findWithAssociationsById(99L)).thenReturn(Optional.of(order));
 
-        assertThatThrownBy(() -> orderService.transition(99L, OrderStatus.ASIGNADO_RUTA, null, null, bodegueroUser))
+        assertThatThrownBy(() -> orderService.transition(99L, OrderStatus.ASIGNADO_RUTA, null, null, adminUser))
                 .isInstanceOf(ApiException.class);
     }
 }

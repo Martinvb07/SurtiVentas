@@ -58,6 +58,11 @@ public class InvoiceController {
         return ResponseEntity.ok(orders);
     }
 
+    @GetMapping("/order/{orderId}/review")
+    public ResponseEntity<List<com.surtiventas.backend.billing.dto.InvoiceLineReview>> review(@PathVariable Long orderId) {
+        return ResponseEntity.ok(invoiceService.reviewOrder(orderId));
+    }
+
     @PostMapping
     public ResponseEntity<InvoiceResponse> generate(@Valid @RequestBody GenerateInvoiceRequest request,
                                                      @AuthenticationPrincipal CustomUserDetails actingUser) {

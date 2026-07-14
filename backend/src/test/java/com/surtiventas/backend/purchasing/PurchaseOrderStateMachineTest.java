@@ -13,8 +13,19 @@ class PurchaseOrderStateMachineTest {
 
     @Test
     void allowsValidTransitionForPermittedRole() {
+        // The biller may cancel their own draft request.
         assertThatCode(() ->
+                stateMachine.validate(PurchaseOrderStatus.BORRADOR, PurchaseOrderStatus.CANCELADA, Role.FACTURADOR))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void onlyAdminSendsTheRequestToTheSupplier() {
+        assertThatThrownBy(() ->
                 stateMachine.validate(PurchaseOrderStatus.BORRADOR, PurchaseOrderStatus.ENVIADA, Role.FACTURADOR))
+                .isInstanceOf(BusinessRuleException.class);
+        assertThatCode(() ->
+                stateMachine.validate(PurchaseOrderStatus.BORRADOR, PurchaseOrderStatus.ENVIADA, Role.ADMINISTRADOR))
                 .doesNotThrowAnyException();
     }
 

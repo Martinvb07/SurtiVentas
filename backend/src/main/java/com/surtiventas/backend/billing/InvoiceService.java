@@ -51,6 +51,20 @@ public class InvoiceService {
         return invoiceRepository.findBillableOrders();
     }
 
+    /** The order's lines with current stock, for the biller's digitalization modal. */
+    public List<com.surtiventas.backend.billing.dto.InvoiceLineReview> reviewOrder(Long orderId) {
+        Order order = orderService.findById(orderId);
+        return order.getLines().stream()
+                .map(line -> new com.surtiventas.backend.billing.dto.InvoiceLineReview(
+                        line.getProduct().getId(),
+                        line.getProduct().getName(),
+                        line.getProduct().getSku(),
+                        line.getQuantity(),
+                        line.getProduct().getStock(),
+                        line.getQuantity() <= line.getProduct().getStock()))
+                .toList();
+    }
+
     @Transactional
     public Invoice generate(GenerateInvoiceRequest request, CustomUserDetails actingUser) {
         Order order = orderService.findById(request.orderId());

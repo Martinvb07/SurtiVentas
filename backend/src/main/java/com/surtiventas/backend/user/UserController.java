@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearerAuth")
-@PreAuthorize("hasAnyRole('ADMINISTRADOR', 'BODEGUERO')")
+@PreAuthorize("hasRole('ADMINISTRADOR')")
 public class UserController {
 
     private final UserService userService;

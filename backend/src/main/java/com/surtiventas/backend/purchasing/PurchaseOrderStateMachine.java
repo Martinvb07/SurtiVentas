@@ -29,13 +29,13 @@ public class PurchaseOrderStateMachine {
         allow(PurchaseOrderStatus.INGRESADA, EnumSet.noneOf(PurchaseOrderStatus.class));
         allow(PurchaseOrderStatus.CANCELADA, EnumSet.noneOf(PurchaseOrderStatus.class));
 
-        // Only the biller orders/sends; the warehouse marks arrival (no stock
-        // change); the admin enters the goods into inventory (stock increase).
-        allowRoles(PurchaseOrderStatus.BORRADOR, PurchaseOrderStatus.ENVIADA, Role.FACTURADOR);
+        // The biller only raises the request (BORRADOR). The admin sends it to
+        // the supplier (ENVIADA). The warehouse marks physical arrival (RECIBIDA,
+        // no stock change). The admin enters the goods into inventory (INGRESADA).
         allowRoles(PurchaseOrderStatus.BORRADOR, PurchaseOrderStatus.CANCELADA, Role.FACTURADOR);
         allowRoles(PurchaseOrderStatus.ENVIADA, PurchaseOrderStatus.RECIBIDA, Role.BODEGUERO);
-        allowRoles(PurchaseOrderStatus.ENVIADA, PurchaseOrderStatus.CANCELADA, Role.FACTURADOR);
-        // RECIBIDA -> INGRESADA is admin-only (handled by the ADMINISTRADOR bypass).
+        // BORRADOR -> ENVIADA, ENVIADA -> CANCELADA and RECIBIDA -> INGRESADA are
+        // admin-only (handled by the ADMINISTRADOR bypass).
     }
 
     /**

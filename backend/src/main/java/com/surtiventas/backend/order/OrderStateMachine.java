@@ -42,12 +42,11 @@ public class OrderStateMachine {
         allowRoles(OrderStatus.CREADO, OrderStatus.FACTURADO, Role.FACTURADOR);
         allowRoles(OrderStatus.CREADO, OrderStatus.CANCELADO, Role.VENDEDOR);
         allowRoles(OrderStatus.FACTURADO, OrderStatus.EN_ALISTAMIENTO, Role.BODEGUERO);
-        // FACTURADO -> CANCELADO and NOVEDAD -> CANCELADO are admin-only (bypass).
         allowRoles(OrderStatus.EN_ALISTAMIENTO, OrderStatus.ALISTADO, Role.BODEGUERO);
-        allowRoles(OrderStatus.ALISTADO, OrderStatus.ASIGNADO_RUTA, Role.BODEGUERO);
+        // ALISTADO/NOVEDAD -> ASIGNADO_RUTA (assigning the driver) and the
+        // *_ -> CANCELADO transitions are admin-only (ADMINISTRADOR bypass).
         allowRoles(OrderStatus.ASIGNADO_RUTA, OrderStatus.ENTREGADO, Role.CONDUCTOR);
         allowRoles(OrderStatus.ASIGNADO_RUTA, OrderStatus.NOVEDAD, Role.CONDUCTOR);
-        allowRoles(OrderStatus.NOVEDAD, OrderStatus.ASIGNADO_RUTA, Role.BODEGUERO);
         allowRoles(OrderStatus.ENTREGADO, OrderStatus.PAGADO, Role.FACTURADOR);
         allowRoles(OrderStatus.ENTREGADO, OrderStatus.CARTERA_PENDIENTE, Role.FACTURADOR);
         allowRoles(OrderStatus.CARTERA_PENDIENTE, OrderStatus.PAGADO, Role.FACTURADOR);
