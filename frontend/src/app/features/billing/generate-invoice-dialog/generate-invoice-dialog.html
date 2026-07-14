@@ -1,41 +1,96 @@
-<h2 mat-dialog-title>Generar factura</h2>
+<h2 mat-dialog-title>Facturar pedido {{ data.order.orderNumber }}</h2>
 
 <mat-dialog-content>
-  <div class="summary">
-    <div class="summary-row">
-      <span class="label">Pedido</span>
-      <span class="value">{{ data.order.orderNumber }}</span>
-    </div>
-    <div class="summary-row">
-      <span class="label">Tienda</span>
-      <span class="value">{{ data.order.customerName }}</span>
-    </div>
-    <div class="summary-row total">
-      <span class="label">Total a facturar</span>
-      <span class="value numeric">{{ data.order.totalAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
-    </div>
-  </div>
+  @if (loading()) {
+    <p class="loading">Cargando el pedido…</p>
+  } @else {
+    @if (!stockOk()) {
+      <div class="stock-warning">
+        <mat-icon>warning</mat-icon>
+        <span>Hay productos sin stock suficiente. Genera una petición en <strong>Órdenes de compra</strong> y espera el ingreso del administrador para poder facturar.</span>
+      </div>
+    }
 
-  <form [formGroup]="form" class="form">
-    <mat-form-field appearance="outline" class="full">
-      <mat-label>Fecha de vencimiento</mat-label>
-      <input matInput [matDatepicker]="picker" [min]="minDate" formControlName="dueDate" />
-      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-      @if (form.controls.dueDate.hasError('required')) {
-        <mat-error>Indica la fecha de vencimiento</mat-error>
-      }
-    </mat-form-field>
-  </form>
+    <div class="split">
+      <!-- Left: what the customer ordered -->
+      <section class="col">
+        <h3 class="col-title">Pedido del cliente — {{ data.order.customerName }}</h3>
+        <div class="ordered">
+          @for (l of orderedLines(); track l.productId) {
+            <div class="ordered-line" [class.short]="!l.sufficient">
+              <span class="ol-qty numeric">{{ l.quantity }}×</span>
+              <div class="ol-main">
+                <div class="ol-name">{{ l.productName }}</div>
+                <div class="ol-sku">{{ l.sku }}</div>
+              </div>
+              @if (l.sufficient) {
+                <span class="ol-stock ok">stock {{ l.stock }}</span>
+              } @else {
+                <span class="ol-stock bad">stock {{ l.stock }} · faltan {{ l.quantity - l.stock }}</span>
+              }
+            </div>
+          }
+        </div>
+      </section>
 
-  @if (errorMessage()) {
-    <p class="error">{{ errorMessage() }}</p>
+      <!-- Right: the biller digitalizes it by hand -->
+      <section class="col">
+        <div class="col-head">
+          <h3 class="col-title">Digitalizar factura</h3>
+          @if (matchesOrder) {
+            <span class="match ok"><mat-icon>check_circle</mat-icon> Coincide</span>
+          } @else {
+            <span class="match pending">No coincide con el pedido</span>
+          }
+        </div>
+
+        <form [formGroup]="form">
+          <div formArrayName="lines" class="digit-lines">
+            @for (line of lines.controls; track $index) {
+              <div class="digit-line" [formGroupName]="$index">
+                <mat-form-field appearance="outline" class="prod">
+                  <mat-label>Producto</mat-label>
+                  <mat-select formControlName="productId">
+                    @for (p of orderedLines(); track p.productId) {
+                      <mat-option [value]="p.productId">{{ p.productName }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="qty">
+                  <mat-label>Cant.</mat-label>
+                  <input matInput type="number" formControlName="quantity" min="1" />
+                </mat-form-field>
+                <button type="button" mat-icon-button class="rm" (click)="removeLine($index)" aria-label="Quitar">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            }
+          </div>
+          <button type="button" mat-button class="add-line" (click)="addLine()">
+            <mat-icon>add</mat-icon> Agregar línea
+          </button>
+        </form>
+      </section>
+    </div>
+
+    <form [formGroup]="form" class="due">
+      <mat-form-field appearance="outline" class="due-field">
+        <mat-label>Fecha de vencimiento</mat-label>
+        <input matInput [matDatepicker]="picker" [min]="minDate" formControlName="dueDate" />
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </form>
+
+    @if (errorMessage()) {
+      <p class="error">{{ errorMessage() }}</p>
+    }
   }
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
   <button mat-button mat-dialog-close [disabled]="saving()">Cancelar</button>
-  <button mat-flat-button color="primary" (click)="submit()" [disabled]="saving()">
+  <button mat-flat-button color="primary" (click)="submit()" [disabled]="saving() || !canGenerate">
     {{ saving() ? 'Generando…' : 'Generar factura' }}
   </button>
 </mat-dialog-actions>

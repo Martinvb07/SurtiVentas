@@ -31,6 +31,11 @@ export class WarehouseKanban {
   protected readonly loading = signal(false);
 
   protected readonly canCancel = computed(() => this.authService.currentUser()?.role === Role.ADMINISTRADOR);
+  // The warehouse picks; the admin assigns the driver (route).
+  protected readonly canPick = computed(() => this.authService.currentUser()?.role === Role.BODEGUERO);
+  protected readonly canAssignRoute = computed(
+    () => this.authService.currentUser()?.role === Role.ADMINISTRADOR,
+  );
 
   // Per-order picking list, loaded on demand (the list endpoint omits lines).
   private readonly linesByOrder = signal<Record<number, OrderLine[]>>({});

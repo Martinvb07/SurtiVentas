@@ -7,6 +7,7 @@ import {
   BillableOrder,
   GenerateInvoiceRequest,
   Invoice,
+  InvoiceLineReview,
   InvoiceStatus,
   RegisterPaymentRequest,
 } from './models/invoice.model';
@@ -42,6 +43,10 @@ export class BillingService {
 
   billableOrders(): Observable<BillableOrder[]> {
     return this.http.get<BillableOrder[]>(`${this.baseUrl}/billable-orders`);
+  }
+
+  reviewOrder(orderId: number): Observable<InvoiceLineReview[]> {
+    return this.http.get<InvoiceLineReview[]>(`${this.baseUrl}/order/${orderId}/review`);
   }
 
   generate(request: GenerateInvoiceRequest): Observable<Invoice> {

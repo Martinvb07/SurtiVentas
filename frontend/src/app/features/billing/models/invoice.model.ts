@@ -37,6 +37,15 @@ export interface BillableOrder {
   createdAt: string;
 }
 
+export interface InvoiceLineReview {
+  productId: number;
+  productName: string;
+  sku: string;
+  quantity: number;
+  stock: number;
+  sufficient: boolean;
+}
+
 export interface GenerateInvoiceRequest {
   orderId: number;
   dueDate: string;

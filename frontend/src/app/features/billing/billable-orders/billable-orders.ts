@@ -29,7 +29,11 @@ export class BillableOrders {
   }
 
   protected generate(order: BillableOrder): void {
-    const ref = this.dialog.open(GenerateInvoiceDialog, { width: '460px', data: { order } });
+    const ref = this.dialog.open(GenerateInvoiceDialog, {
+      width: '780px',
+      maxWidth: '780px',
+      data: { order },
+    });
     ref.afterClosed().subscribe((created) => {
       if (created) {
         this.refresh();

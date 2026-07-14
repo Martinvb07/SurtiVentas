@@ -1,7 +1,7 @@
 <div class="kanban-page">
   <div class="header">
     <h1>Alistamiento</h1>
-    <p class="subtitle">Pedidos aprobados en camino hacia la entrega</p>
+    <p class="subtitle">Pedidos facturados en camino hacia la entrega</p>
   </div>
 
   <div class="board">
@@ -39,10 +39,12 @@
               }
             }
 
-            <button mat-button class="card-action" (click)="startPicking(order)">
-              <mat-icon>play_arrow</mat-icon>
-              Iniciar alistamiento
-            </button>
+            @if (canPick()) {
+              <button mat-button class="card-action" (click)="startPicking(order)">
+                <mat-icon>play_arrow</mat-icon>
+                Iniciar alistamiento
+              </button>
+            }
           </div>
         } @empty {
           <div class="empty-column">Sin pedidos</div>
@@ -84,10 +86,12 @@
               }
             }
 
-            <button mat-button class="card-action" (click)="finishPicking(order)">
-              <mat-icon>inventory_2</mat-icon>
-              Marcar alistado
-            </button>
+            @if (canPick()) {
+              <button mat-button class="card-action" (click)="finishPicking(order)">
+                <mat-icon>inventory_2</mat-icon>
+                Marcar alistado
+              </button>
+            }
           </div>
         } @empty {
           <div class="empty-column">Sin pedidos</div>
@@ -106,10 +110,12 @@
             <div class="card-title">{{ order.orderNumber }}</div>
             <div class="card-subtitle">{{ order.customerName }}</div>
             <div class="card-amount numeric">{{ order.totalAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</div>
-            <button mat-button class="card-action" (click)="openAssignDriver(order)">
-              <mat-icon>local_shipping</mat-icon>
-              Asignar a ruta
-            </button>
+            @if (canAssignRoute()) {
+              <button mat-button class="card-action" (click)="openAssignDriver(order)">
+                <mat-icon>local_shipping</mat-icon>
+                Asignar a ruta
+              </button>
+            }
           </div>
         } @empty {
           <div class="empty-column">Sin pedidos</div>
@@ -147,10 +153,12 @@
             <div class="card-title">{{ order.orderNumber }}</div>
             <div class="card-subtitle">{{ order.customerName }}</div>
             <div class="card-amount numeric">{{ order.totalAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</div>
-            <button mat-button class="card-action" (click)="openAssignDriver(order)">
-              <mat-icon>replay</mat-icon>
-              Reintentar despacho
-            </button>
+            @if (canAssignRoute()) {
+              <button mat-button class="card-action" (click)="openAssignDriver(order)">
+                <mat-icon>replay</mat-icon>
+                Reintentar despacho
+              </button>
+            }
             @if (canCancel()) {
               <button mat-button class="card-action card-action-danger" (click)="cancelIncident(order)">
                 <mat-icon>block</mat-icon>

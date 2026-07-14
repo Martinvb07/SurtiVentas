@@ -1,5 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { AuthService } from '../../../core/auth/auth.service';
+import { Role } from '../../../core/auth/models/role.enum';
 import { GeoService } from '../geo.service';
 import { StorePoint } from '../models/geo.model';
 import { MapPoint, RouteMap } from '../route-map/route-map';
@@ -12,6 +14,9 @@ import { MapPoint, RouteMap } from '../route-map/route-map';
 })
 export class SellerRoute {
   private readonly geo = inject(GeoService);
+  private readonly auth = inject(AuthService);
+
+  protected readonly isAdmin = computed(() => this.auth.currentUser()?.role === Role.ADMINISTRADOR);
 
   protected readonly stores = signal<StorePoint[]>([]);
   protected readonly loading = signal(true);

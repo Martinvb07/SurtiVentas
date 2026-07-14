@@ -1,8 +1,8 @@
 <div class="map-page">
   <header class="map-head">
     <div>
-      <h1>Mi ruta</h1>
-      <p class="subtitle">Tiendas de tu zona</p>
+      <h1>{{ isAdmin() ? 'Mapa de tiendas' : 'Mi ruta' }}</h1>
+      <p class="subtitle">{{ isAdmin() ? 'Ubicación de las tiendas/clientes' : 'Tiendas de tu zona' }}</p>
     </div>
     <span class="count">{{ stores().length }} tiendas</span>
   </header>
