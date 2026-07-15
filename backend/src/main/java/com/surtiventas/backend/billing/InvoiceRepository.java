@@ -33,6 +33,18 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long>, JpaSpec
             "where i.id = :id")
     Optional<Invoice> findDetailById(@Param("id") Long id);
 
+    // ---- Finance report (income) ----
+
+    @Query("select coalesce(sum(i.totalAmount), 0) from Invoice i")
+    java.math.BigDecimal sumInvoicedTotal();
+
+    @Query("select coalesce(sum(i.totalAmount), 0) from Invoice i where i.issuedAt >= :from")
+    java.math.BigDecimal sumInvoicedSince(@Param("from") java.time.Instant from);
+
+    @Query("select function('date_format', i.issuedAt, '%Y-%m'), coalesce(sum(i.totalAmount), 0) from Invoice i " +
+            "where i.issuedAt >= :from group by function('date_format', i.issuedAt, '%Y-%m')")
+    List<Object[]> invoicedByMonthSince(@Param("from") java.time.Instant from);
+
     /** Freshly taken orders (CREADO) that don't have an invoice yet — the biller's queue. */
     @Query("select o from Order o join fetch o.customer " +
             "where o.status = com.surtiventas.backend.order.OrderStatus.CREADO " +
