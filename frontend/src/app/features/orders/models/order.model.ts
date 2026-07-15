@@ -45,6 +45,8 @@ export interface OrderLineRequest {
 export interface OrderCreateRequest {
   customerId: number;
   lines: OrderLineRequest[];
+  /** Client-generated UUID for offline-synced orders (idempotency key). */
+  clientRequestId?: string;
 }
 
 export interface OrderTransitionRequest {

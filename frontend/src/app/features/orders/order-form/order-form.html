@@ -6,6 +6,13 @@
       <div class="error-banner">{{ errorMessage() }}</div>
     }
 
+    @if (offline()) {
+      <div class="offline-banner">
+        <mat-icon>cloud_off</mat-icon>
+        <span>Sin conexión: el pedido se guardará y se enviará automáticamente al reconectar.</span>
+      </div>
+    }
+
     <div class="row">
       <mat-form-field appearance="outline">
         <mat-label>Cliente</mat-label>
@@ -61,6 +68,8 @@
 
   <mat-dialog-actions align="end">
     <button mat-button type="button" mat-dialog-close [disabled]="saving()">Cancelar</button>
-    <button mat-flat-button type="submit" class="submit-button" [disabled]="saving()">Crear pedido</button>
+    <button mat-flat-button type="submit" class="submit-button" [disabled]="saving()">
+      {{ offline() ? 'Guardar pedido' : 'Crear pedido' }}
+    </button>
   </mat-dialog-actions>
 </form>

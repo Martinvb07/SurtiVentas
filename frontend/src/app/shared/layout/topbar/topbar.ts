@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
@@ -6,16 +6,20 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
+import { ConnectivityService } from '../../../core/offline/connectivity.service';
+import { OrderOutboxService } from '../../../core/offline/order-outbox.service';
 import { NotificationService } from '../../../core/realtime/notification.service';
 
 @Component({
   selector: 'app-topbar',
-  imports: [DatePipe, MatIconModule, MatBadgeModule, MatButtonModule, MatMenuModule],
+  imports: [CurrencyPipe, DatePipe, MatIconModule, MatBadgeModule, MatButtonModule, MatMenuModule],
   templateUrl: './topbar.html',
   styleUrl: './topbar.scss',
 })
 export class Topbar {
   protected readonly notifications = inject(NotificationService);
+  protected readonly connectivity = inject(ConnectivityService);
+  protected readonly outbox = inject(OrderOutboxService);
 
   constructor(
     protected readonly authService: AuthService,
@@ -24,6 +28,10 @@ export class Topbar {
 
   protected onNotificationsOpened(): void {
     this.notifications.markAllRead();
+  }
+
+  protected syncNow(): void {
+    void this.outbox.syncNow();
   }
 
   protected logout(): void {

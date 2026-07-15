@@ -14,7 +14,7 @@ import { Role } from '../../../core/auth/models/role.enum';
 import { OrdersService } from '../orders.service';
 import { Order, OrderStatus } from '../models/order.model';
 import { OrderDetailDialog } from '../order-detail-dialog/order-detail-dialog';
-import { OrderForm } from '../order-form/order-form';
+import { OrderForm, OrderFormResult } from '../order-form/order-form';
 import { OrderTransitionDialog } from '../order-transition-dialog/order-transition-dialog';
 
 @Component({
@@ -86,8 +86,13 @@ export class OrderList {
 
   protected openCreateDialog(): void {
     const ref = this.dialog.open(OrderForm, { width: '720px', maxWidth: '720px' });
-    ref.afterClosed().subscribe((created) => {
-      if (created) {
+    ref.afterClosed().subscribe((result: OrderFormResult | undefined) => {
+      if (!result) {
+        return;
+      }
+      if (result.queued) {
+        this.snackBar.open('Sin conexión: el pedido se guardó y se enviará al reconectar', 'Cerrar', { duration: 5000 });
+      } else {
         this.refresh();
         this.snackBar.open('Pedido creado', 'Cerrar', { duration: 3000 });
       }

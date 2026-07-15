@@ -5,6 +5,53 @@
 
   <div class="spacer"></div>
 
+  @if (!connectivity.online()) {
+    <span class="conn-chip" aria-label="Sin conexión">
+      <mat-icon>cloud_off</mat-icon>
+      Sin conexión
+    </span>
+  }
+
+  @if (outbox.pendingCount() > 0) {
+    <button
+      mat-icon-button
+      class="sync-button"
+      [matMenuTriggerFor]="syncMenu"
+      aria-label="Pedidos por sincronizar"
+    >
+      <mat-icon
+        [matBadge]="outbox.pendingCount()"
+        matBadgeColor="warn"
+        matBadgeSize="small"
+        [class.spinning]="outbox.syncing()"
+        >sync</mat-icon
+      >
+    </button>
+
+    <mat-menu #syncMenu="matMenu" class="sync-menu" xPosition="before">
+      <div class="sync-head">Pedidos por sincronizar ({{ outbox.pendingCount() }})</div>
+      @for (o of outbox.pending(); track o.clientRequestId) {
+        <div class="sync-item" (click)="$event.stopPropagation()">
+          <div class="sync-title">{{ o.customerName || 'Cliente' }}</div>
+          <div class="sync-sub">
+            {{ o.total | currency: 'COP' : 'symbol-narrow' : '1.0-0' }} · {{ o.createdAt | date: 'short' }}
+          </div>
+          @if (o.lastError) {
+            <div class="sync-err">{{ o.lastError }}</div>
+          }
+        </div>
+      }
+      <button
+        mat-menu-item
+        (click)="syncNow()"
+        [disabled]="!connectivity.online() || outbox.syncing()"
+      >
+        <mat-icon>sync</mat-icon>
+        <span>{{ outbox.syncing() ? 'Sincronizando…' : 'Sincronizar ahora' }}</span>
+      </button>
+    </mat-menu>
+  }
+
   <button
     mat-icon-button
     class="bell-button"

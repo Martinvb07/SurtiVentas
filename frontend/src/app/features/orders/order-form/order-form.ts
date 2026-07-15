@@ -1,5 +1,6 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -7,11 +8,24 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { CatalogService } from '../../catalog/catalog.service';
+import { ConnectivityService } from '../../../core/offline/connectivity.service';
+import { OfflineStorageService } from '../../../core/offline/offline-storage.service';
+import { OrderOutboxService } from '../../../core/offline/order-outbox.service';
+import { PresaleCacheService } from '../../../core/offline/presale-cache.service';
 import { Product } from '../../catalog/models/product.model';
-import { CustomersService } from '../../customers/customers.service';
 import { Customer } from '../../customers/models/customer.model';
-import { OrdersService } from '../orders.service';
+
+const DRAFT_KEY = 'presale.cart.draft';
+
+interface CartDraft {
+  customerId: number | null;
+  lines: { productId: number | null; quantity: number }[];
+}
+
+/** What the dialog resolves with, so the list can react appropriately. */
+export interface OrderFormResult {
+  queued: boolean;
+}
 
 @Component({
   selector: 'app-order-form',
@@ -30,15 +44,17 @@ import { OrdersService } from '../orders.service';
 })
 export class OrderForm {
   private readonly fb = inject(FormBuilder);
-  private readonly customersService = inject(CustomersService);
-  private readonly catalogService = inject(CatalogService);
-  private readonly ordersService = inject(OrdersService);
-  private readonly dialogRef = inject(MatDialogRef<OrderForm>);
+  private readonly presaleCache = inject(PresaleCacheService);
+  private readonly outbox = inject(OrderOutboxService);
+  private readonly connectivity = inject(ConnectivityService);
+  private readonly storage = inject(OfflineStorageService);
+  private readonly dialogRef = inject(MatDialogRef<OrderForm, OrderFormResult>);
 
   protected readonly customers = signal<Customer[]>([]);
   protected readonly products = signal<Product[]>([]);
   protected readonly saving = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  protected readonly offline = computed(() => !this.connectivity.online());
 
   protected readonly form = this.fb.nonNullable.group({
     customerId: [null as number | null, Validators.required],
@@ -50,8 +66,13 @@ export class OrderForm {
   }
 
   constructor() {
-    this.customersService.search({ active: true, size: 200 }).subscribe((page) => this.customers.set(page.content));
-    this.catalogService.searchProducts({ active: true, size: 200 }).subscribe((page) => this.products.set(page.content));
+    // Cached catalog/customers keep the cart usable with no connection.
+    this.presaleCache.getCustomers().subscribe((customers) => this.customers.set(customers));
+    this.presaleCache.getProducts().subscribe((products) => this.products.set(products));
+
+    this.restoreDraft();
+    // Persist the in-progress cart so it survives a reload or the app closing.
+    this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => this.saveDraft());
   }
 
   protected addLine(): void {
@@ -78,7 +99,7 @@ export class OrderForm {
     return this.lines.controls.reduce((sum: number, _control, index) => sum + this.subtotalFor(index), 0);
   }
 
-  protected submit(): void {
+  protected async submit(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -87,31 +108,53 @@ export class OrderForm {
     this.saving.set(true);
     this.errorMessage.set(null);
     const value = this.form.getRawValue();
+    const customerName = this.customers().find((c) => c.id === value.customerId)?.storeName ?? '';
 
-    this.ordersService
-      .create({
-        customerId: value.customerId!,
-        lines: value.lines.map((line) => ({
-          productId: line.productId!,
-          quantity: line.quantity,
-        })),
-      })
-      .subscribe({
-        next: (order) => {
-          this.saving.set(false);
-          this.dialogRef.close(order);
+    try {
+      const result = await this.outbox.submit(
+        {
+          customerId: value.customerId!,
+          lines: value.lines.map((line) => ({ productId: line.productId!, quantity: line.quantity })),
         },
-        error: (error) => {
-          this.saving.set(false);
-          this.errorMessage.set(error.error?.message ?? 'No se pudo crear el pedido.');
-        },
-      });
+        { customerName, total: this.total },
+      );
+      this.clearDraft();
+      this.dialogRef.close({ queued: !result.synced });
+    } catch (error: unknown) {
+      this.saving.set(false);
+      this.errorMessage.set(this.messageFrom(error));
+    }
   }
 
-  private buildLineGroup() {
+  private buildLineGroup(productId: number | null = null, quantity = 1) {
     return this.fb.nonNullable.group({
-      productId: [null as number | null, Validators.required],
-      quantity: [1, [Validators.required, Validators.min(1)]],
+      productId: [productId, Validators.required],
+      quantity: [quantity, [Validators.required, Validators.min(1)]],
     });
+  }
+
+  private restoreDraft(): void {
+    const draft = this.storage.get<CartDraft | null>(DRAFT_KEY, null);
+    if (!draft || !draft.lines?.length) {
+      return;
+    }
+    this.form.controls.customerId.setValue(draft.customerId);
+    this.lines.clear();
+    for (const line of draft.lines) {
+      this.lines.push(this.buildLineGroup(line.productId, line.quantity));
+    }
+  }
+
+  private saveDraft(): void {
+    this.storage.set(DRAFT_KEY, this.form.getRawValue());
+  }
+
+  private clearDraft(): void {
+    this.storage.remove(DRAFT_KEY);
+  }
+
+  private messageFrom(error: unknown): string {
+    const err = error as { error?: { message?: string } };
+    return err?.error?.message ?? 'No se pudo crear el pedido.';
   }
 }
