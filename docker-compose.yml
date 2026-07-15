@@ -36,10 +36,13 @@ services:
       JWT_ACCESS_EXPIRATION_MS: ${JWT_ACCESS_EXPIRATION_MS}
       JWT_REFRESH_EXPIRATION_MS: ${JWT_REFRESH_EXPIRATION_MS}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+      OCR_SERVICE_URL: ${OCR_SERVICE_URL}
     ports:
       - "8080:8080"
     depends_on:
       mysql:
+        condition: service_healthy
+      ocr:
         condition: service_healthy
     networks:
       - surtiventas-net
@@ -55,13 +58,23 @@ services:
     networks:
       - surtiventas-net
 
-  # Placeholder Tesseract OCR service. No HTTP API is wired yet; a future
-  # session adds a thin API wrapper here and the backend calling code that
-  # uses it. Present now so the compose topology doesn't need to change later.
+  # Tesseract OCR microservice for supplier-invoice reconciliation (Fase 2).
+  # A tiny stdlib-Python HTTP wrapper around the tesseract binary; only the
+  # backend talks to it over the internal network, so no host port is exposed.
   ocr:
     build:
       context: ./ocr
     restart: unless-stopped
+    expose:
+      - "8000"
+    # Use 127.0.0.1, not localhost: in the Alpine container localhost can
+    # resolve to IPv6 (::1) while the service binds IPv4, giving a false
+    # "connection refused" and a perpetually unhealthy container.
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:8000/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
     networks:
       - surtiventas-net
 

@@ -1,12 +1,23 @@
-# Placeholder Tesseract OCR service.
+# Supplier-invoice OCR microservice (Fase 2).
 #
-# This container only proves the docker-compose topology for the future
-# supplier-invoice OCR module (Fase 2). It currently exposes no HTTP API —
-# a later session adds a small web wrapper (e.g. Flask/FastAPI or a tiny
-# Spring Boot service) around the tesseract binary and the backend calling
-# code that talks to it.
+# A tiny, dependency-free HTTP wrapper (Python stdlib, no pip) around the
+# tesseract binary. The backend POSTs raw file bytes and gets the extracted
+# text back as JSON. poppler-utils is included so PDF invoices are rasterised
+# (pdftoppm) before OCR; the Spanish + English trained data cover the invoices
+# SurtiVentas handles.
 FROM alpine:3.20
 
-RUN apk add --no-cache tesseract-ocr tesseract-ocr-data-spa tesseract-ocr-data-eng
+RUN apk add --no-cache \
+    python3 \
+    tesseract-ocr \
+    tesseract-ocr-data-spa \
+    tesseract-ocr-data-eng \
+    poppler-utils
 
-CMD ["tail", "-f", "/dev/null"]
+WORKDIR /app
+COPY app.py .
+
+EXPOSE 8000
+
+# busybox wget (bundled in Alpine) backs the compose healthcheck against /health.
+CMD ["python3", "app.py"]
