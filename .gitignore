@@ -20,6 +20,9 @@ frontend/npm-debug.log*
 # Claude Code harness state (not part of the project)
 .claude/
 
+# Internal tracking, not part of the deliverable
+ROADMAP.md
+
 # Env
 .env
 *.env.local
