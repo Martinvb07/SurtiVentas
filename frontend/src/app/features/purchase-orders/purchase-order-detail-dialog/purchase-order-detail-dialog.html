@@ -26,6 +26,102 @@
     Total: <strong class="numeric">{{ data.purchaseOrder.totalAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong>
   </div>
 
+  <div class="section-label">Factura del proveedor</div>
+  <div class="invoice-section">
+    @if (loadingInvoice()) {
+      <div class="invoice-loading">
+        <mat-spinner diameter="20" />
+        <span>Cargando factura…</span>
+      </div>
+    } @else if (invoice(); as inv) {
+      <div
+        class="reconcile"
+        [class.reconcile-ok]="inv.matched"
+        [class.reconcile-warn]="!inv.matched && inv.detectedTotal != null"
+        [class.reconcile-neutral]="inv.detectedTotal == null"
+      >
+        @if (inv.matched) {
+          <mat-icon>check_circle</mat-icon>
+          <div class="reconcile-text">
+            <strong>Coincide con la orden</strong>
+            <span>El total de la factura coincide con el total de la orden de compra.</span>
+          </div>
+        } @else if (inv.detectedTotal != null) {
+          <mat-icon>warning</mat-icon>
+          <div class="reconcile-text">
+            <strong>Diferencia detectada</strong>
+            <span>El total de la factura no coincide con el de la orden. Revisar antes de ingresar al inventario.</span>
+          </div>
+        } @else {
+          <mat-icon>help</mat-icon>
+          <div class="reconcile-text">
+            <strong>Sin total detectado</strong>
+            <span>El OCR no pudo leer un total en la factura. Revisa el archivo y el texto extraído.</span>
+          </div>
+        }
+      </div>
+
+      <div class="reconcile-totals">
+        <div><span class="k">Total orden</span><span class="v numeric">{{ inv.poTotal | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span></div>
+        <div>
+          <span class="k">Total factura (OCR)</span>
+          <span class="v numeric">{{ inv.detectedTotal != null ? (inv.detectedTotal | currency: 'COP' : 'symbol-narrow' : '1.0-0') : '—' }}</span>
+        </div>
+        @if (inv.detectedTotal != null) {
+          <div><span class="k">Diferencia</span><span class="v numeric">{{ inv.difference | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span></div>
+        }
+      </div>
+
+      @if (inv.lines.length) {
+        <div class="detected-lines">
+          <div class="detected-lines-title">Líneas detectadas en la factura</div>
+          @for (line of inv.lines; track $index) {
+            <div class="detected-line">
+              <span class="dl-qty">{{ line.quantity ?? '' }}</span>
+              <span class="dl-desc">{{ line.description }}</span>
+              <span class="dl-amt numeric">{{ line.amount != null ? (line.amount | currency: 'COP' : 'symbol-narrow' : '1.0-0') : '' }}</span>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="invoice-meta">{{ inv.fileName }} · {{ inv.uploadedByName }} · {{ inv.createdAt | date: 'short' }}</div>
+
+      <div class="invoice-actions">
+        <button mat-stroked-button type="button" (click)="viewFile()">
+          <mat-icon>visibility</mat-icon> Ver archivo
+        </button>
+        @if (inv.extractedText) {
+          <button mat-button type="button" (click)="toggleExtractedText()">
+            {{ showExtractedText() ? 'Ocultar texto OCR' : 'Ver texto OCR' }}
+          </button>
+        }
+        @if (canScan()) {
+          <label class="file-button" [class.disabled]="uploading()">
+            <input type="file" accept="image/png,image/jpeg,application/pdf" hidden [disabled]="uploading()" (change)="onFileSelected($event)" />
+            @if (uploading()) { <mat-spinner diameter="16" /> Procesando… } @else { Reemplazar }
+          </label>
+        }
+      </div>
+
+      @if (showExtractedText() && inv.extractedText) {
+        <pre class="ocr-text">{{ inv.extractedText }}</pre>
+      }
+    } @else if (canScan()) {
+      <p class="invoice-hint">Escanea la factura física del proveedor para conciliarla con la orden.</p>
+      <label class="file-button primary" [class.disabled]="uploading()">
+        <input type="file" accept="image/png,image/jpeg,application/pdf" hidden [disabled]="uploading()" (change)="onFileSelected($event)" />
+        @if (uploading()) {
+          <mat-spinner diameter="18" /> Procesando factura…
+        } @else {
+          <mat-icon>document_scanner</mat-icon> Escanear factura
+        }
+      </label>
+    } @else {
+      <p class="invoice-empty">Aún no se ha adjuntado la factura del proveedor.</p>
+    }
+  </div>
+
   <div class="section-label">Historial</div>
   <div class="history-list">
     @for (entry of history(); track entry.id) {

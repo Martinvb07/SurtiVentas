@@ -69,3 +69,201 @@
   color: var(--sv-text-secondary);
   font-style: italic;
 }
+
+/* ---- Supplier invoice (OCR reconciliation) ---- */
+
+.invoice-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.invoice-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--sv-text-muted);
+}
+
+.reconcile {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--sv-radius-md);
+  border: 1px solid var(--sv-border);
+  background: var(--sv-bg);
+
+  mat-icon {
+    flex: none;
+  }
+
+  .reconcile-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    strong {
+      font-size: 13px;
+    }
+
+    span {
+      font-size: 12px;
+      color: var(--sv-text-secondary);
+    }
+  }
+}
+
+.reconcile-ok {
+  background: var(--sv-success-bg);
+  border-color: var(--sv-success);
+  mat-icon,
+  strong {
+    color: var(--sv-success);
+  }
+}
+
+.reconcile-warn {
+  background: var(--sv-warning-bg);
+  border-color: var(--sv-warning);
+  mat-icon,
+  strong {
+    color: var(--sv-warning-ink);
+  }
+}
+
+.reconcile-neutral {
+  mat-icon,
+  strong {
+    color: var(--sv-text-secondary);
+  }
+}
+
+.reconcile-totals {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  div {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12.5px;
+  }
+
+  .k {
+    color: var(--sv-text-muted);
+  }
+
+  .v {
+    font-weight: 600;
+    color: var(--sv-ink);
+  }
+}
+
+.detected-lines {
+  border: 1px solid var(--sv-border);
+  border-radius: var(--sv-radius-md);
+  overflow: hidden;
+}
+
+.detected-lines-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--sv-text-muted);
+  padding: 6px 10px;
+  background: var(--sv-bg);
+}
+
+.detected-line {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  gap: 8px;
+  padding: 5px 10px;
+  font-size: 12.5px;
+  border-top: 1px solid var(--sv-border);
+
+  .dl-qty {
+    color: var(--sv-text-muted);
+    text-align: right;
+  }
+
+  .dl-desc {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.invoice-meta {
+  font-size: 11.5px;
+  color: var(--sv-text-muted);
+}
+
+.invoice-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.invoice-hint {
+  font-size: 12.5px;
+  color: var(--sv-text-secondary);
+  margin: 0;
+}
+
+.invoice-empty {
+  font-size: 12.5px;
+  color: var(--sv-text-muted);
+  margin: 0;
+}
+
+/* File-picker styled as a button (a hidden <input> inside a <label>). */
+.file-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: var(--sv-radius-md);
+  border: 1px solid var(--sv-border-strong);
+  color: var(--sv-ink);
+  user-select: none;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &.primary {
+    background: var(--sv-primary);
+    border-color: var(--sv-primary);
+    color: #fff;
+  }
+
+  &.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+.ocr-text {
+  max-height: 180px;
+  overflow: auto;
+  margin: 0;
+  padding: 10px;
+  font-size: 11.5px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: var(--sv-bg);
+  border: 1px solid var(--sv-border);
+  border-radius: var(--sv-radius-md);
+  color: var(--sv-text-secondary);
+}

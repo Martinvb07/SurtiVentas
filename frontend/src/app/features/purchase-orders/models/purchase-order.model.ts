@@ -50,3 +50,26 @@ export interface PurchaseOrderHistoryEntry {
   note: string | null;
   changedAt: string;
 }
+
+/** A candidate line item detected by OCR on the scanned supplier invoice. */
+export interface SupplierInvoiceLine {
+  description: string;
+  quantity: number | null;
+  amount: number | null;
+}
+
+/** The scanned supplier invoice + its reconciliation against the order total. */
+export interface SupplierInvoice {
+  id: number;
+  purchaseOrderId: number;
+  fileName: string;
+  contentType: string;
+  extractedText: string | null;
+  detectedTotal: number | null;
+  poTotal: number;
+  difference: number | null;
+  matched: boolean;
+  lines: SupplierInvoiceLine[];
+  uploadedByName: string | null;
+  createdAt: string;
+}
