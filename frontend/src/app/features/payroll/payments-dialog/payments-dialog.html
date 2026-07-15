@@ -1,0 +1,28 @@
+<h2 mat-dialog-title>Pagos de {{ data.employee.fullName }}</h2>
+
+<mat-dialog-content>
+  @if (loading()) {
+    <p class="loading">Cargando…</p>
+  } @else if (payments().length) {
+    <ul class="payments">
+      @for (p of payments(); track p.id) {
+        <li class="payment">
+          <div class="p-main">
+            <span class="p-period">{{ p.period }}</span>
+            @if (p.note) {
+              <span class="p-note">{{ p.note }}</span>
+            }
+            <span class="p-meta">{{ p.paidAt | date: 'dd/MM/yyyy' }} · {{ p.registeredByName }}</span>
+          </div>
+          <span class="p-amount numeric">{{ p.amount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="empty">Este empleado no tiene pagos registrados.</p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cerrar</button>
+</mat-dialog-actions>

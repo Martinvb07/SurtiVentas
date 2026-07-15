@@ -52,6 +52,10 @@ export const routes: Routes = [
         path: 'finance',
         loadChildren: () => import('./features/finance/finance.routes').then((m) => m.FINANCE_ROUTES),
       },
+      {
+        path: 'payroll',
+        loadChildren: () => import('./features/payroll/payroll.routes').then((m) => m.PAYROLL_ROUTES),
+      },
     ],
   },
   { path: '**', redirectTo: 'login' },

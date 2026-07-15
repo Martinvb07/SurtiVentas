@@ -112,6 +112,12 @@ export const NAV_SECTIONS: NavSection[] = [
         route: '/app/finance/income',
         roles: [Role.ADMINISTRADOR],
       },
+      {
+        label: 'Nómina',
+        icon: 'badge',
+        route: '/app/payroll/employees',
+        roles: [Role.ADMINISTRADOR],
+      },
     ],
   },
   {

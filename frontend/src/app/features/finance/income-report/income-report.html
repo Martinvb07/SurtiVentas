@@ -30,9 +30,15 @@
         [value]="d.purchasesMonth | currency: 'COP' : 'symbol-narrow' : '1.0-0'"
       />
       <app-kpi-card
+        icon="badge"
+        tone="warning"
+        label="Nómina"
+        [value]="d.payrollMonth | currency: 'COP' : 'symbol-narrow' : '1.0-0'"
+      />
+      <app-kpi-card
         icon="savings"
         [tone]="d.profitMonth >= 0 ? 'success' : 'danger'"
-        label="Utilidad (cobrado − compras)"
+        label="Utilidad (cobrado − compras − nómina)"
         [value]="d.profitMonth | currency: 'COP' : 'symbol-narrow' : '1.0-0'"
       />
     </div>
@@ -65,6 +71,10 @@
           <div class="total-row">
             <span class="t-label">Compras</span>
             <span class="t-value numeric warn">{{ d.purchasesTotal | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+          </div>
+          <div class="total-row">
+            <span class="t-label">Nómina</span>
+            <span class="t-value numeric warn">{{ d.payrollTotal | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
           </div>
           <div class="total-row total-profit">
             <span class="t-label">Utilidad</span>

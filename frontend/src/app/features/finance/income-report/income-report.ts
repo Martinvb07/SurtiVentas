@@ -37,6 +37,7 @@ export class IncomeReportPage {
           { label: 'Facturado', data: d.trend.map((t) => t.invoiced), backgroundColor: '#1b4a7a', borderRadius: 4 },
           { label: 'Cobrado', data: d.trend.map((t) => t.collected), backgroundColor: '#2f9e68', borderRadius: 4 },
           { label: 'Compras', data: d.trend.map((t) => t.purchases), backgroundColor: '#e89b2e', borderRadius: 4 },
+          { label: 'Nómina', data: d.trend.map((t) => t.payroll), backgroundColor: '#7a5ea8', borderRadius: 4 },
         ],
       },
       options: {
