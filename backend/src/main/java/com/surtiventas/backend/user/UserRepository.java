@@ -16,6 +16,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByRoleAndActiveTrue(Role role);
 
+    List<User> findAllByOrderByActiveDescFullNameAsc();
+
     /** The store linked to a buyer account, resolved without lazy-loading. */
     @Query("select u.customer from User u where u.id = :userId")
     Optional<Customer> findCustomerByUserId(@Param("userId") Long userId);

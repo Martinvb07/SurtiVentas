@@ -31,6 +31,26 @@ public class UserService {
         return userRepository.findByRoleAndActiveTrue(role);
     }
 
+    public List<User> findAll() {
+        return userRepository.findAllByOrderByActiveDescFullNameAsc();
+    }
+
+    @Transactional
+    public User update(Long id, String fullName, Role role, boolean active) {
+        User user = findById(id);
+        user.setFullName(fullName);
+        user.setRole(role);
+        user.setActive(active);
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public void resetPassword(Long id, String rawPassword) {
+        User user = findById(id);
+        user.setPasswordHash(passwordEncoder.encode(rawPassword));
+        userRepository.save(user);
+    }
+
     @Transactional
     public User createUser(String email, String rawPassword, String fullName, Role role) {
         if (userRepository.existsByEmail(email)) {
