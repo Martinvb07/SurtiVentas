@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -52,6 +53,16 @@ public class OrderService {
 
     @Transactional
     public Order create(OrderCreateRequest request, CustomUserDetails actingUser) {
+        // Idempotent replay: a queued offline order re-synced with the same
+        // client key returns the original order instead of duplicating it.
+        String clientRequestId = normalizeClientRequestId(request.clientRequestId());
+        if (clientRequestId != null) {
+            Optional<Order> existing = orderRepository.findByClientRequestId(clientRequestId);
+            if (existing.isPresent()) {
+                return findById(existing.get().getId());
+            }
+        }
+
         Customer customer = customerRepository.findById(request.customerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found: " + request.customerId()));
         if (!customer.isActive()) {
@@ -62,6 +73,7 @@ public class OrderService {
         Order order = Order.builder()
                 .orderNumber(generateOrderNumber())
                 .customer(customer)
+                .clientRequestId(clientRequestId)
                 .status(OrderStatus.CREADO)
                 .createdBy(user)
                 .build();
@@ -135,6 +147,13 @@ public class OrderService {
                 .note(note)
                 .build();
         historyRepository.save(history);
+    }
+
+    private String normalizeClientRequestId(String clientRequestId) {
+        if (clientRequestId == null || clientRequestId.isBlank()) {
+            return null;
+        }
+        return clientRequestId.trim();
     }
 
     private String generateOrderNumber() {

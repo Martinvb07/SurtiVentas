@@ -84,7 +84,7 @@ public class PortalService {
             throw new ApiException(HttpStatus.CONFLICT, "El último pedido no tiene productos para repetir");
         }
 
-        return orderService.create(new OrderCreateRequest(store.getId(), lines), buyer);
+        return orderService.create(new OrderCreateRequest(store.getId(), lines, null), buyer);
     }
 
     private Customer resolveStore(CustomUserDetails buyer) {

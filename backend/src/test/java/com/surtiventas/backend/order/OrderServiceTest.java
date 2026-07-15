@@ -22,9 +22,14 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import org.mockito.ArgumentCaptor;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -84,12 +89,48 @@ class OrderServiceTest {
 
         OrderCreateRequest request = new OrderCreateRequest(20L, List.of(
                 new OrderLineRequest(10L, 3),
-                new OrderLineRequest(11L, 2)));
+                new OrderLineRequest(11L, 2)), null);
 
         Order created = orderService.create(request, actingUser);
 
         assertThat(created.getTotalAmount()).isEqualByComparingTo("400");
         assertThat(created.getLines()).hasSize(2);
+    }
+
+    @Test
+    void replayingWithSameClientRequestIdReturnsExistingOrderWithoutDuplicating() {
+        Order existing = Order.builder().id(77L).orderNumber("PED-1").customer(customer)
+                .status(OrderStatus.CREADO).createdBy(actingUser.getUser()).clientRequestId("uuid-1").build();
+        when(orderRepository.findByClientRequestId("uuid-1")).thenReturn(Optional.of(existing));
+        when(orderRepository.findWithAssociationsById(77L)).thenReturn(Optional.of(existing));
+
+        OrderCreateRequest request = new OrderCreateRequest(20L, List.of(new OrderLineRequest(10L, 3)), "uuid-1");
+        Order result = orderService.create(request, actingUser);
+
+        assertThat(result.getId()).isEqualTo(77L);
+        // No duplicate written, no re-notification, customer never re-validated.
+        verify(orderRepository, never()).save(any());
+        verifyNoInteractions(notificationService);
+        verify(customerRepository, never()).findById(any());
+    }
+
+    @Test
+    void createWithClientRequestIdPersistsTheIdempotencyKey() {
+        Product productA = Product.builder().id(10L).sku("A").name("Producto A").price(new BigDecimal("100")).stock(50).build();
+        when(orderRepository.findByClientRequestId("uuid-2")).thenReturn(Optional.empty());
+        when(customerRepository.findById(20L)).thenReturn(Optional.of(customer));
+        when(productRepository.findById(10L)).thenReturn(Optional.of(productA));
+        when(orderRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(orderRepository.findWithAssociationsById(any())).thenAnswer(inv -> Optional.of(
+                Order.builder().id(99L).customer(customer).status(OrderStatus.CREADO)
+                        .createdBy(actingUser.getUser()).build()));
+
+        OrderCreateRequest request = new OrderCreateRequest(20L, List.of(new OrderLineRequest(10L, 1)), "uuid-2");
+        orderService.create(request, actingUser);
+
+        ArgumentCaptor<Order> captor = ArgumentCaptor.forClass(Order.class);
+        verify(orderRepository).save(captor.capture());
+        assertThat(captor.getValue().getClientRequestId()).isEqualTo("uuid-2");
     }
 
     @Test

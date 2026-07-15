@@ -49,6 +49,14 @@ public class Order {
     @Column(name = "order_number", nullable = false, unique = true, length = 30)
     private String orderNumber;
 
+    /**
+     * Client-generated idempotency key for offline-synced orders (a UUID from
+     * the pre-sale device). Null for orders created directly online. Unique, so
+     * replaying a queued order after a flaky sync never duplicates it.
+     */
+    @Column(name = "client_request_id", length = 36, unique = true)
+    private String clientRequestId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;

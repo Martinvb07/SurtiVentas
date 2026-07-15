@@ -16,6 +16,8 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
 
     boolean existsByOrderNumber(String orderNumber);
 
+    Optional<Order> findByClientRequestId(String clientRequestId);
+
     @Query("select distinct o from Order o " +
             "join fetch o.customer " +
             "left join fetch o.assignedDriver " +
