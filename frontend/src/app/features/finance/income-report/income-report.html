@@ -1,0 +1,81 @@
+<section class="dash">
+  <header class="dash-head">
+    <div>
+      <h1 class="dash-title">Ingresos</h1>
+      <p class="dash-sub">Ventas y cobros frente al gasto en mercancía</p>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="dash-loading">Cargando finanzas…</div>
+  } @else if (data(); as d) {
+    <p class="dash-section-title">Este mes</p>
+    <div class="dash-kpis">
+      <app-kpi-card
+        icon="receipt_long"
+        tone="primary"
+        label="Facturado"
+        [value]="d.invoicedMonth | currency: 'COP' : 'symbol-narrow' : '1.0-0'"
+      />
+      <app-kpi-card
+        icon="payments"
+        tone="success"
+        label="Cobrado"
+        [value]="d.collectedMonth | currency: 'COP' : 'symbol-narrow' : '1.0-0'"
+      />
+      <app-kpi-card
+        icon="local_shipping"
+        tone="warning"
+        label="Compras"
+        [value]="d.purchasesMonth | currency: 'COP' : 'symbol-narrow' : '1.0-0'"
+      />
+      <app-kpi-card
+        icon="savings"
+        [tone]="d.profitMonth >= 0 ? 'success' : 'danger'"
+        label="Utilidad (cobrado − compras)"
+        [value]="d.profitMonth | currency: 'COP' : 'symbol-narrow' : '1.0-0'"
+      />
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-card dash-col-8">
+        <div class="dash-card-head">
+          <h2 class="dash-card-title">Últimos 6 meses</h2>
+        </div>
+        <div class="dash-chart">
+          @if (chartConfig(); as cfg) {
+            <app-chart [config]="cfg" />
+          }
+        </div>
+      </div>
+
+      <div class="dash-card dash-col-4">
+        <div class="dash-card-head">
+          <h2 class="dash-card-title">Acumulado (histórico)</h2>
+        </div>
+        <div class="totals">
+          <div class="total-row">
+            <span class="t-label">Facturado</span>
+            <span class="t-value numeric">{{ d.invoicedTotal | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+          </div>
+          <div class="total-row">
+            <span class="t-label">Cobrado</span>
+            <span class="t-value numeric ok">{{ d.collectedTotal | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+          </div>
+          <div class="total-row">
+            <span class="t-label">Compras</span>
+            <span class="t-value numeric warn">{{ d.purchasesTotal | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+          </div>
+          <div class="total-row total-profit">
+            <span class="t-label">Utilidad</span>
+            <span class="t-value numeric" [class.ok]="d.profitTotal >= 0" [class.bad]="d.profitTotal < 0">
+              {{ d.profitTotal | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <div class="dash-empty"><mat-icon>error_outline</mat-icon>No se pudo cargar el reporte.</div>
+  }
+</section>

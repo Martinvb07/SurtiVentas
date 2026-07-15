@@ -48,6 +48,10 @@ export const routes: Routes = [
         path: 'portal',
         loadChildren: () => import('./features/portal/portal.routes').then((m) => m.PORTAL_ROUTES),
       },
+      {
+        path: 'finance',
+        loadChildren: () => import('./features/finance/finance.routes').then((m) => m.FINANCE_ROUTES),
+      },
     ],
   },
   { path: '**', redirectTo: 'login' },

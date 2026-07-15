@@ -1,0 +1,50 @@
+.totals {
+  display: flex;
+  flex-direction: column;
+}
+
+.total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 2px;
+  border-bottom: 1px solid var(--sv-border);
+  font-size: 13.5px;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.t-label {
+  color: var(--sv-text-secondary);
+}
+
+.t-value {
+  font-weight: 700;
+  color: var(--sv-ink);
+
+  &.ok {
+    color: var(--sv-success);
+  }
+  &.warn {
+    color: var(--sv-warning-ink);
+  }
+  &.bad {
+    color: var(--sv-danger);
+  }
+}
+
+.total-profit {
+  margin-top: 4px;
+  border-top: 2px solid var(--sv-border-strong);
+
+  .t-label {
+    font-weight: 700;
+    color: var(--sv-ink);
+  }
+  .t-value {
+    font-size: 15px;
+    font-weight: 800;
+  }
+}

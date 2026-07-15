@@ -104,6 +104,17 @@ export const NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
+    label: 'Finanzas',
+    entries: [
+      {
+        label: 'Ingresos',
+        icon: 'trending_up',
+        route: '/app/finance/income',
+        roles: [Role.ADMINISTRADOR],
+      },
+    ],
+  },
+  {
     label: 'Mi tienda',
     entries: [
       {
