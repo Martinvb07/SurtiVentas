@@ -4,6 +4,7 @@ import com.surtiventas.backend.billing.InvoiceRepository;
 import com.surtiventas.backend.billing.PaymentRepository;
 import com.surtiventas.backend.finance.dto.IncomeReportResponse;
 import com.surtiventas.backend.finance.dto.MonthlyPoint;
+import com.surtiventas.backend.payroll.PayrollPaymentRepository;
 import com.surtiventas.backend.purchasing.PurchaseOrderRepository;
 import com.surtiventas.backend.purchasing.PurchaseOrderStatus;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,7 @@ public class FinanceService {
     private final InvoiceRepository invoiceRepository;
     private final PaymentRepository paymentRepository;
     private final PurchaseOrderRepository purchaseOrderRepository;
+    private final PayrollPaymentRepository payrollPaymentRepository;
 
     public IncomeReportResponse income() {
         Instant startOfMonth = startOfMonth();
@@ -51,14 +53,17 @@ public class FinanceService {
         BigDecimal invoicedMonth = invoiceRepository.sumInvoicedSince(startOfMonth);
         BigDecimal collectedMonth = paymentRepository.sumCollectedSince(startOfMonth);
         BigDecimal purchasesMonth = purchaseOrderRepository.sumPurchasesSince(PURCHASE_STATUSES, startOfMonth);
+        BigDecimal payrollMonth = payrollPaymentRepository.sumPaidSince(startOfMonth);
 
         BigDecimal invoicedTotal = invoiceRepository.sumInvoicedTotal();
         BigDecimal collectedTotal = paymentRepository.sumCollectedTotal();
         BigDecimal purchasesTotal = purchaseOrderRepository.sumPurchasesTotal(PURCHASE_STATUSES);
+        BigDecimal payrollTotal = payrollPaymentRepository.sumPaidTotal();
 
         Map<String, BigDecimal> invoiced = toMonthMap(invoiceRepository.invoicedByMonthSince(trendFrom));
         Map<String, BigDecimal> collected = toMonthMap(paymentRepository.collectedByMonthSince(trendFrom));
         Map<String, BigDecimal> purchases = toMonthMap(purchaseOrderRepository.purchasesByMonthSince(PURCHASE_STATUSES, trendFrom));
+        Map<String, BigDecimal> payroll = toMonthMap(payrollPaymentRepository.paidByMonthSince(trendFrom));
 
         List<MonthlyPoint> trend = new ArrayList<>(TREND_MONTHS);
         YearMonth now = YearMonth.now(ZONE);
@@ -69,12 +74,16 @@ public class FinanceService {
                     MONTH_LABELS[month.getMonthValue() - 1],
                     invoiced.getOrDefault(key, BigDecimal.ZERO),
                     collected.getOrDefault(key, BigDecimal.ZERO),
-                    purchases.getOrDefault(key, BigDecimal.ZERO)));
+                    purchases.getOrDefault(key, BigDecimal.ZERO),
+                    payroll.getOrDefault(key, BigDecimal.ZERO)));
         }
 
+        BigDecimal profitMonth = collectedMonth.subtract(purchasesMonth).subtract(payrollMonth);
+        BigDecimal profitTotal = collectedTotal.subtract(purchasesTotal).subtract(payrollTotal);
+
         return new IncomeReportResponse(
-                invoicedMonth, collectedMonth, purchasesMonth, collectedMonth.subtract(purchasesMonth),
-                invoicedTotal, collectedTotal, purchasesTotal, collectedTotal.subtract(purchasesTotal),
+                invoicedMonth, collectedMonth, purchasesMonth, payrollMonth, profitMonth,
+                invoicedTotal, collectedTotal, purchasesTotal, payrollTotal, profitTotal,
                 trend);
     }
 
