@@ -121,6 +121,17 @@ export const NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
+    label: 'Administración',
+    entries: [
+      {
+        label: 'Usuarios',
+        icon: 'manage_accounts',
+        route: '/app/users',
+        roles: [Role.ADMINISTRADOR],
+      },
+    ],
+  },
+  {
     label: 'Mi tienda',
     entries: [
       {

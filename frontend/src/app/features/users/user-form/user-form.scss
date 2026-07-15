@@ -1,0 +1,16 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 6px;
+}
+
+.full {
+  width: 100%;
+}
+
+.error {
+  color: var(--sv-danger);
+  font-size: 12.5px;
+  margin: 4px 0 0;
+}

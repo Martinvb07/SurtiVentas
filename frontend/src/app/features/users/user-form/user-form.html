@@ -1,0 +1,50 @@
+<h2 mat-dialog-title>{{ isEdit ? 'Editar usuario' : 'Nuevo usuario' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="form">
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Correo electrónico</mat-label>
+      <input matInput type="email" formControlName="email" />
+      @if (isEdit) {
+        <mat-hint>El correo no se puede cambiar</mat-hint>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Nombre completo</mat-label>
+      <input matInput formControlName="fullName" maxlength="150" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Rol</mat-label>
+      <mat-select formControlName="role">
+        @for (r of roles; track r) {
+          <mat-option [value]="r">{{ roleLabel(r) }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    @if (!isEdit) {
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Contraseña inicial</mat-label>
+        <input matInput type="password" formControlName="password" />
+        <mat-hint>Mínimo 6 caracteres</mat-hint>
+      </mat-form-field>
+    }
+
+    @if (isEdit) {
+      <mat-slide-toggle formControlName="active">Activo (puede entrar al sistema)</mat-slide-toggle>
+    }
+  </form>
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close [disabled]="saving()">Cancelar</button>
+  <button mat-flat-button color="primary" (click)="submit()" [disabled]="saving()">
+    {{ saving() ? 'Guardando…' : 'Guardar' }}
+  </button>
+</mat-dialog-actions>
