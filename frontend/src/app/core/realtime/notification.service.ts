@@ -35,7 +35,7 @@ export class NotificationService {
       connectHeaders: { Authorization: `Bearer ${token}` },
       reconnectDelay: 5000,
       onConnect: () => {
-        this.client?.subscribe(`/topic/notifications/${user.role}`, (message: IMessage) => {
+        this.client?.subscribe(`/topic/notifications.${user.role}`, (message: IMessage) => {
           this.push(JSON.parse(message.body) as AppNotification);
         });
       },
