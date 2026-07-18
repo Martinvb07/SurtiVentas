@@ -69,6 +69,13 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
             "and o.status <> com.surtiventas.backend.order.OrderStatus.CANCELADO")
     BigDecimal sumSalesByCreatorSince(@Param("userId") Long userId, @Param("from") Instant from);
 
+    /** A seller's (non-cancelled) sales within a period, for commissions. */
+    @Query("select coalesce(sum(o.totalAmount), 0) from Order o " +
+            "where o.createdBy.id = :userId and o.createdAt >= :from and o.createdAt < :to " +
+            "and o.status <> com.surtiventas.backend.order.OrderStatus.CANCELADO")
+    BigDecimal sumSalesByCreatorBetween(@Param("userId") Long userId,
+                                        @Param("from") Instant from, @Param("to") Instant to);
+
     @Query("select count(distinct o.customer.id) from Order o " +
             "where o.createdBy.id = :userId and o.createdAt >= :from")
     long countDistinctCustomersByCreatorSince(@Param("userId") Long userId, @Param("from") Instant from);
