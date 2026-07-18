@@ -1,3 +1,49 @@
+# High-availability topology: two stateless backend instances (backend1/backend2)
+# behind the nginx load balancer (the frontend service), a shared MySQL, and a
+# shared RabbitMQ STOMP broker so real-time notifications work across instances.
+
+# Shared definition for every backend instance. Instances are stateless (JWT
+# auth, shared DB, shared broker), carry no host port (only the load balancer is
+# exposed), and relay STOMP to RabbitMQ so notifications reach subscribers on
+# any instance.
+x-backend: &backend
+  build:
+    context: ./backend
+  restart: unless-stopped
+  environment:
+    SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+    DB_URL: ${DB_URL}
+    DB_USERNAME: ${DB_USERNAME}
+    DB_PASSWORD: ${DB_PASSWORD}
+    JWT_SECRET: ${JWT_SECRET}
+    JWT_ACCESS_EXPIRATION_MS: ${JWT_ACCESS_EXPIRATION_MS}
+    JWT_REFRESH_EXPIRATION_MS: ${JWT_REFRESH_EXPIRATION_MS}
+    CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+    OCR_SERVICE_URL: ${OCR_SERVICE_URL}
+    BROKER_RELAY_ENABLED: ${BROKER_RELAY_ENABLED}
+    BROKER_RELAY_HOST: rabbitmq
+    BROKER_RELAY_PORT: "61613"
+    BROKER_RELAY_LOGIN: ${RABBITMQ_USER}
+    BROKER_RELAY_PASSCODE: ${RABBITMQ_PASS}
+  depends_on:
+    mysql:
+      condition: service_healthy
+    ocr:
+      condition: service_healthy
+    rabbitmq:
+      condition: service_healthy
+  healthcheck:
+    # The project doesn't ship Actuator, so we probe a lightweight public
+    # endpoint the app actually serves (the OpenAPI JSON) to confirm the web
+    # layer is up. The nginx load balancer does its own per-request health check.
+    test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/v3/api-docs"]
+    interval: 10s
+    timeout: 5s
+    retries: 24
+    start_period: 40s
+  networks:
+    - surtiventas-net
+
 services:
   mysql:
     image: mysql:8.4
@@ -9,7 +55,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       # Host port 3307 to avoid clashing with a native MySQL install on
-      # 3306; the backend talks to the container over the internal Docker
+      # 3306; the backends talk to the container over the internal Docker
       # network on 3306 regardless (see DB_URL), so this only affects
       # connecting from a host tool like MySQL Workbench.
       - "3307:3306"
@@ -23,29 +69,34 @@ services:
     networks:
       - surtiventas-net
 
-  backend:
-    build:
-      context: ./backend
+  # Shared STOMP broker so notifications published on one backend instance reach
+  # WebSocket subscribers connected to another. STOMP listener on 61613 (internal);
+  # the management UI is exposed on 15672 for observability.
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
     restart: unless-stopped
+    hostname: rabbitmq
     environment:
-      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
-      DB_URL: ${DB_URL}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_ACCESS_EXPIRATION_MS: ${JWT_ACCESS_EXPIRATION_MS}
-      JWT_REFRESH_EXPIRATION_MS: ${JWT_REFRESH_EXPIRATION_MS}
-      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
-      OCR_SERVICE_URL: ${OCR_SERVICE_URL}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
     ports:
-      - "8080:8080"
-    depends_on:
-      mysql:
-        condition: service_healthy
-      ocr:
-        condition: service_healthy
+      - "15672:15672"
+    volumes:
+      - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
     networks:
       - surtiventas-net
+
+  backend1:
+    <<: *backend
+
+  backend2:
+    <<: *backend
 
   frontend:
     build:
@@ -54,13 +105,16 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - backend
+      backend1:
+        condition: service_healthy
+      backend2:
+        condition: service_healthy
     networks:
       - surtiventas-net
 
   # Tesseract OCR microservice for supplier-invoice reconciliation (Fase 2).
   # A tiny stdlib-Python HTTP wrapper around the tesseract binary; only the
-  # backend talks to it over the internal network, so no host port is exposed.
+  # backends talk to it over the internal network, so no host port is exposed.
   ocr:
     build:
       context: ./ocr
@@ -84,3 +138,4 @@ networks:
 
 volumes:
   mysql_data:
+  rabbitmq_data:

@@ -50,7 +50,9 @@ public class NotificationService {
                 order.getId(),
                 order.getOrderNumber(),
                 Instant.now());
-        messagingTemplate.convertAndSend("/topic/notifications/" + role.name(), notification);
+        // Dot separator (not slash) so the destination is a valid single-segment
+        // RabbitMQ topic when the STOMP broker relay is used in HA mode.
+        messagingTemplate.convertAndSend("/topic/notifications." + role.name(), notification);
     }
 
     private static Map<OrderStatus, Target> buildTargets() {

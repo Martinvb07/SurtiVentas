@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 public class StompAuthChannelInterceptor implements ChannelInterceptor {
 
     private static final String BEARER_PREFIX = "Bearer ";
-    private static final String ROLE_TOPIC_PREFIX = "/topic/notifications/";
+    private static final String ROLE_TOPIC_PREFIX = "/topic/notifications.";
 
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;

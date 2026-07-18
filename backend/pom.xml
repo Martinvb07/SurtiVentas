@@ -45,6 +45,16 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-websocket</artifactId>
     </dependency>
+    <!-- TCP client used by the STOMP broker relay to reach the external
+         RabbitMQ broker when running multiple backend instances (HA). Spring's
+         relay probes for reactor.netty.http.client.HttpClient (in
+         reactor-netty-http, which also pulls reactor-netty-core); the plain
+         reactor-netty aggregate additionally drags in the native QUIC
+         incubator, which crashes the test fork, so we depend on http directly. -->
+    <dependency>
+      <groupId>io.projectreactor.netty</groupId>
+      <artifactId>reactor-netty-http</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>com.mysql</groupId>
