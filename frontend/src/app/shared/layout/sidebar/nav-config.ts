@@ -56,6 +56,12 @@ export const NAV_SECTIONS: NavSection[] = [
         roles: [Role.VENDEDOR],
       },
       {
+        label: 'Mis comisiones',
+        icon: 'paid',
+        route: '/app/commissions/me',
+        roles: [Role.VENDEDOR],
+      },
+      {
         label: 'Mapa de tiendas',
         icon: 'map',
         route: '/app/logistics/route',
@@ -116,6 +122,12 @@ export const NAV_SECTIONS: NavSection[] = [
         label: 'Nómina',
         icon: 'badge',
         route: '/app/payroll/employees',
+        roles: [Role.ADMINISTRADOR],
+      },
+      {
+        label: 'Comisiones',
+        icon: 'paid',
+        route: '/app/commissions/manage',
         roles: [Role.ADMINISTRADOR],
       },
     ],

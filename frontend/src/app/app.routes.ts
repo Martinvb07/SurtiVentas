@@ -53,6 +53,10 @@ export const routes: Routes = [
         loadChildren: () => import('./features/finance/finance.routes').then((m) => m.FINANCE_ROUTES),
       },
       {
+        path: 'commissions',
+        loadChildren: () => import('./features/commissions/commissions.routes').then((m) => m.COMMISSIONS_ROUTES),
+      },
+      {
         path: 'payroll',
         loadChildren: () => import('./features/payroll/payroll.routes').then((m) => m.PAYROLL_ROUTES),
       },

@@ -1,0 +1,88 @@
+<div class="commissions-page">
+  <div class="header">
+    <div>
+      <h1>Comisiones y metas</h1>
+      <p class="subtitle">Metas de venta y comisiones de los vendedores por mes.</p>
+    </div>
+    <label class="month-field">
+      <span>Mes</span>
+      <input type="month" [value]="month()" (change)="onMonthChange($any($event.target).value)" />
+    </label>
+  </div>
+
+  <div class="summary">
+    <div class="summary-card">
+      <span class="k">Ventas del mes</span>
+      <span class="v numeric">{{ totalAchieved() | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+    </div>
+    <div class="summary-card accent">
+      <span class="k">Comisiones del mes</span>
+      <span class="v numeric">{{ totalCommission() | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="rows()">
+      <ng-container matColumnDef="seller">
+        <th mat-header-cell *matHeaderCellDef>Vendedor</th>
+        <td mat-cell *matCellDef="let r">{{ r.sellerName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="target">
+        <th mat-header-cell *matHeaderCellDef>Meta</th>
+        <td mat-cell *matCellDef="let r" class="numeric">
+          @if (r.hasGoal) {
+            {{ r.targetAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+          } @else {
+            <span class="muted">Sin meta</span>
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="achieved">
+        <th mat-header-cell *matHeaderCellDef>Vendido</th>
+        <td mat-cell *matCellDef="let r" class="numeric">{{ r.achievedSales | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="attainment">
+        <th mat-header-cell *matHeaderCellDef>Cumplimiento</th>
+        <td mat-cell *matCellDef="let r">
+          @if (r.attainmentPct != null) {
+            <span class="chip" [class.ok]="r.goalMet" [class.warn]="!r.goalMet">
+              {{ r.attainmentPct | number: '1.0-1' }}%
+            </span>
+          } @else {
+            <span class="muted">—</span>
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="commission">
+        <th mat-header-cell *matHeaderCellDef>Comisión</th>
+        <td mat-cell *matCellDef="let r" class="numeric">
+          <strong>{{ r.commission | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong>
+          @if (r.appliedRate != null) {
+            <span class="rate">{{ r.appliedRate | number: '1.0-2' }}%</span>
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let r">
+          <button mat-stroked-button (click)="editGoal(r)">
+            <mat-icon>flag</mat-icon>
+            {{ r.hasGoal ? 'Editar meta' : 'Asignar meta' }}
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    @if (!loading() && rows().length === 0) {
+      <div class="empty-state">No hay vendedores activos.</div>
+    }
+  </div>
+</div>

@@ -1,0 +1,140 @@
+.commissions-page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+
+  h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--sv-ink);
+  }
+
+  .subtitle {
+    margin: 2px 0 0;
+    font-size: 13px;
+    color: var(--sv-text-muted);
+  }
+}
+
+.month-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--sv-text-muted);
+
+  input {
+    font: inherit;
+    font-size: 13px;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--sv-ink);
+    padding: 8px 10px;
+    border: 1px solid var(--sv-border-strong);
+    border-radius: var(--sv-radius-md);
+    background: var(--sv-surface);
+  }
+}
+
+.summary {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.summary-card {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid var(--sv-border);
+  border-radius: var(--sv-radius-lg);
+  background: var(--sv-surface);
+
+  .k {
+    font-size: 12px;
+    color: var(--sv-text-muted);
+  }
+
+  .v {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--sv-ink);
+  }
+
+  &.accent {
+    background: var(--sv-success-bg);
+    border-color: var(--sv-success);
+
+    .v {
+      color: var(--sv-success);
+    }
+  }
+}
+
+.table-wrapper {
+  border: 1px solid var(--sv-border);
+  border-radius: var(--sv-radius-lg);
+  overflow: hidden;
+
+  table {
+    width: 100%;
+  }
+}
+
+.numeric {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+th.mat-mdc-header-cell.numeric,
+.mat-mdc-cell.numeric {
+  text-align: right;
+}
+
+.muted {
+  color: var(--sv-text-muted);
+}
+
+.rate {
+  display: block;
+  font-size: 11px;
+  color: var(--sv-text-muted);
+}
+
+.chip {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+
+  &.ok {
+    background: var(--sv-success-bg);
+    color: var(--sv-success);
+  }
+  &.warn {
+    background: var(--sv-warning-bg);
+    color: var(--sv-warning-ink);
+  }
+}
+
+.empty-state {
+  padding: 32px;
+  text-align: center;
+  color: var(--sv-text-muted);
+  font-size: 13px;
+}

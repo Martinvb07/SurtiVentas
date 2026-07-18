@@ -1,0 +1,60 @@
+<div class="my-commission-page">
+  <div class="header">
+    <div>
+      <h1>Mis comisiones</h1>
+      <p class="subtitle">Tu meta, tus ventas y tu comisión del mes.</p>
+    </div>
+    <label class="month-field">
+      <span>Mes</span>
+      <input type="month" [value]="month()" (change)="onMonthChange($any($event.target).value)" />
+    </label>
+  </div>
+
+  @if (commission(); as c) {
+    <div class="cards">
+      <div class="card">
+        <span class="k">Ventas del mes</span>
+        <span class="v numeric">{{ c.achievedSales | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+      </div>
+      <div class="card">
+        <span class="k">Meta</span>
+        <span class="v numeric">
+          @if (c.hasGoal) {
+            {{ c.targetAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+          } @else {
+            <span class="muted">Sin meta</span>
+          }
+        </span>
+      </div>
+      <div class="card accent">
+        <span class="k">Comisión</span>
+        <span class="v numeric">{{ c.commission | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+        @if (c.appliedRate != null) {
+          <span class="rate">tasa aplicada {{ c.appliedRate | number: '1.0-2' }}%</span>
+        }
+      </div>
+    </div>
+
+    @if (c.hasGoal) {
+      <div class="progress-block">
+        <div class="progress-head">
+          <span>Cumplimiento de la meta</span>
+          <span class="pct" [class.ok]="c.goalMet">{{ c.attainmentPct | number: '1.0-1' }}%</span>
+        </div>
+        <mat-progress-bar mode="determinate" [value]="progress()" [color]="c.goalMet ? 'primary' : 'accent'" />
+        @if (c.goalMet) {
+          <div class="met-badge"><mat-icon>emoji_events</mat-icon> ¡Meta cumplida! Se aplicó el bono.</div>
+        } @else {
+          <div class="pending">Sigue así para alcanzar tu meta y desbloquear el bono.</div>
+        }
+      </div>
+    } @else {
+      <div class="no-goal">
+        <mat-icon>flag</mat-icon>
+        <span>Aún no tienes una meta asignada para este mes. Tus ventas siguen registrándose.</span>
+      </div>
+    }
+  } @else if (!loading()) {
+    <div class="no-goal">Sin datos para este mes.</div>
+  }
+</div>
