@@ -18,4 +18,9 @@ public interface SupplierProductRepository extends JpaRepository<SupplierProduct
     boolean existsBySupplierIdAndProductId(Long supplierId, Long productId);
 
     Optional<SupplierProduct> findBySupplierIdAndProductId(Long supplierId, Long productId);
+
+    /** Suppliers that offer a product, cheapest first (for replenishment). */
+    @Query("select sp from SupplierProduct sp join fetch sp.supplier " +
+            "where sp.product.id = :productId order by sp.cost asc")
+    List<SupplierProduct> findByProductIdOrderByCostAsc(@Param("productId") Long productId);
 }

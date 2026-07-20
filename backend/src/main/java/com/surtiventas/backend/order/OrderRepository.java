@@ -53,6 +53,12 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
             "group by l.product.id, l.product.name order by sum(l.quantity) desc")
     List<Object[]> topSoldProducts(Pageable pageable);
 
+    /** Units sold per product since a date (non-cancelled), for replenishment demand. */
+    @Query("select l.product.id, coalesce(sum(l.quantity), 0) from Order o join o.lines l " +
+            "where o.createdAt >= :from and o.status <> com.surtiventas.backend.order.OrderStatus.CANCELADO " +
+            "group by l.product.id")
+    List<Object[]> soldQuantitiesByProductSince(@Param("from") Instant from);
+
     @Query("select o.createdBy.fullName, coalesce(sum(o.totalAmount), 0) from Order o " +
             "where o.createdAt >= :from and o.status <> com.surtiventas.backend.order.OrderStatus.CANCELADO " +
             "group by o.createdBy.id, o.createdBy.fullName order by sum(o.totalAmount) desc")
