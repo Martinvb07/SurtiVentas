@@ -1,9 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PurchaseOrdersService } from '../purchase-orders.service';
 import { PurchaseOrder, PurchaseOrderStatus } from '../models/purchase-order.model';
 
@@ -14,9 +16,33 @@ export interface TransitionDialogData {
   confirmLabel: string;
 }
 
+const STATUS_LABELS: Record<PurchaseOrderStatus, string> = {
+  BORRADOR: 'Borrador',
+  ENVIADA: 'Enviada',
+  RECIBIDA: 'Recibida',
+  INGRESADA: 'Ingresada',
+  CANCELADA: 'Cancelada',
+};
+
+const STATUS_ICONS: Record<PurchaseOrderStatus, string> = {
+  BORRADOR: 'edit_note',
+  ENVIADA: 'send',
+  RECIBIDA: 'inventory_2',
+  INGRESADA: 'add_box',
+  CANCELADA: 'block',
+};
+
 @Component({
   selector: 'app-transition-dialog',
-  imports: [ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule],
+  imports: [
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+  ],
   templateUrl: './transition-dialog.html',
   styleUrl: './transition-dialog.scss',
 })
@@ -29,9 +55,16 @@ export class TransitionDialog {
   protected readonly saving = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
 
+  protected readonly destructive = computed(() => this.data.targetStatus === 'CANCELADA');
+  protected readonly icon = computed(() => STATUS_ICONS[this.data.targetStatus]);
+
   protected readonly form = this.fb.nonNullable.group({
     note: [''],
   });
+
+  protected label(status: PurchaseOrderStatus): string {
+    return STATUS_LABELS[status];
+  }
 
   protected submit(): void {
     this.saving.set(true);

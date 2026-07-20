@@ -13,4 +13,8 @@
 
 .content {
   flex: 1;
+  // Let wide content (tables) shrink and scroll inside their own wrappers
+  // instead of pushing the whole layout past the viewport.
+  min-width: 0;
+  overflow-x: hidden;
 }

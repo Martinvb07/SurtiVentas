@@ -49,7 +49,10 @@ export class PurchaseOrderList {
   protected readonly totalElements = signal(0);
   protected readonly loading = signal(false);
 
-  // Only the biller (and admin) orders/sends/cancels purchase orders.
+  protected readonly isAdmin = computed(() => this.authService.currentUser()?.role === Role.ADMINISTRADOR);
+
+  // The biller (and admin) raise purchase orders; only the admin sends them to
+  // the supplier, so "send" is gated separately (see the template).
   protected readonly canManageOrder = computed(() => {
     const role = this.authService.currentUser()?.role;
     return role === Role.ADMINISTRADOR || role === Role.FACTURADOR;

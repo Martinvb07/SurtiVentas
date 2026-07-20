@@ -3,6 +3,14 @@
   flex-direction: column;
   gap: 18px;
   max-width: 760px;
+  min-width: 0;
+  padding: 24px 28px 32px;
+}
+
+@media (max-width: 640px) {
+  .my-commission-page {
+    padding: 16px;
+  }
 }
 
 .header {
