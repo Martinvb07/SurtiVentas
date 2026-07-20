@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.surtiventas.backend.common.exception.BusinessRuleException;
 import com.surtiventas.backend.common.exception.ResourceNotFoundException;
+import com.surtiventas.backend.ocr.OcrClient;
 import com.surtiventas.backend.purchasing.dto.SupplierInvoiceLineResponse;
 import com.surtiventas.backend.purchasing.dto.SupplierInvoiceResponse;
 import com.surtiventas.backend.security.CustomUserDetails;

@@ -1,4 +1,4 @@
-package com.surtiventas.backend.purchasing;
+package com.surtiventas.backend.ocr;
 
 import com.surtiventas.backend.common.exception.BusinessRuleException;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,8 +12,9 @@ import java.time.Duration;
 
 /**
  * Talks to the Tesseract OCR microservice (the {@code ocr} compose service).
- * The contract is deliberately simple: POST the raw file bytes with the file's
- * Content-Type to {@code /ocr}, get {@code {"text": ...}} back.
+ * Shared by the features that scan documents (supplier invoices, payment
+ * receipts). The contract is deliberately simple: POST the raw file bytes with
+ * the file's Content-Type to {@code /ocr}, get {@code {"text": ...}} back.
  */
 @Component
 public class OcrClient {
@@ -45,7 +46,7 @@ public class OcrClient {
             return response != null && response.text() != null ? response.text() : "";
         } catch (RestClientException ex) {
             throw new BusinessRuleException(
-                    "No se pudo procesar la factura con el servicio OCR: " + ex.getMessage());
+                    "No se pudo procesar el archivo con el servicio OCR: " + ex.getMessage());
         }
     }
 
