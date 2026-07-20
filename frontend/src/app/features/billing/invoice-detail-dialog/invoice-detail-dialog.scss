@@ -84,15 +84,21 @@
 
 .payment {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 8px 0;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 0;
   border-bottom: 1px solid var(--sv-border);
 
   &:last-child {
     border-bottom: none;
   }
+}
+
+.payment-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .payment-main {
@@ -125,4 +131,84 @@
 .empty {
   font-size: 13px;
   color: var(--sv-text-muted);
+}
+
+/* ---- Payment receipt (OCR reconciliation) ---- */
+
+.receipt {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+  }
+
+  &.ok {
+    color: var(--sv-success);
+    background: var(--sv-success-bg);
+  }
+  &.warn {
+    color: var(--sv-warning-ink);
+    background: var(--sv-warning-bg);
+  }
+  &.muted {
+    color: var(--sv-text-secondary);
+    background: var(--sv-bg);
+  }
+}
+
+.rc-ref {
+  font-size: 11.5px;
+  color: var(--sv-text-muted);
+}
+
+.rc-view {
+  min-width: 0;
+  line-height: 1.6;
+}
+
+/* File-picker styled as a small button (hidden input in a label). */
+.rc-file {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: var(--sv-radius-md);
+  border: 1px solid var(--sv-border-strong);
+  color: var(--sv-ink);
+  user-select: none;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  &.primary {
+    background: var(--sv-primary);
+    border-color: var(--sv-primary);
+    color: #fff;
+  }
+
+  &.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
 }

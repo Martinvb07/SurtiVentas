@@ -56,3 +56,19 @@ export interface RegisterPaymentRequest {
   method: PaymentMethod;
   reference: string | null;
 }
+
+/** The scanned proof of payment (comprobante) + its OCR reconciliation. */
+export interface PaymentReceipt {
+  id: number;
+  paymentId: number;
+  fileName: string;
+  contentType: string;
+  extractedText: string | null;
+  detectedAmount: number | null;
+  detectedReference: string | null;
+  paymentAmount: number;
+  difference: number | null;
+  matched: boolean;
+  uploadedByName: string | null;
+  createdAt: string;
+}

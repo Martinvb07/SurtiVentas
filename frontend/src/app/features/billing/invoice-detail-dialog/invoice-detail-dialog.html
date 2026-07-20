@@ -45,14 +45,58 @@
     <ul class="payments">
       @for (p of data.invoice.payments; track p.id) {
         <li class="payment">
-          <div class="payment-main">
-            <span class="payment-method">{{ p.method | titlecase }}</span>
-            @if (p.reference) {
-              <span class="payment-ref">{{ p.reference }}</span>
-            }
-            <span class="payment-meta">{{ p.paidAt | date: 'dd/MM/yyyy' }} · {{ p.registeredByName }}</span>
+          <div class="payment-row">
+            <div class="payment-main">
+              <span class="payment-method">{{ p.method | titlecase }}</span>
+              @if (p.reference) {
+                <span class="payment-ref">{{ p.reference }}</span>
+              }
+              <span class="payment-meta">{{ p.paidAt | date: 'dd/MM/yyyy' }} · {{ p.registeredByName }}</span>
+            </div>
+            <span class="payment-amount numeric">{{ p.amount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
           </div>
-          <span class="payment-amount numeric">{{ p.amount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+
+          <div class="receipt">
+            @if (receiptFor(p.id); as r) {
+              <span
+                class="rc-badge"
+                [class.ok]="r.matched"
+                [class.warn]="!r.matched && r.detectedAmount != null"
+                [class.muted]="r.detectedAmount == null"
+              >
+                <mat-icon>{{ r.matched ? 'check_circle' : (r.detectedAmount != null ? 'warning' : 'help') }}</mat-icon>
+                @if (r.matched) {
+                  Comprobante coincide
+                } @else if (r.detectedAmount != null) {
+                  Detectado {{ r.detectedAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }} · dif
+                  {{ r.difference | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+                } @else {
+                  Sin monto detectado
+                }
+              </span>
+              @if (r.detectedReference) {
+                <span class="rc-ref">Ref: {{ r.detectedReference }}</span>
+              }
+              <button mat-button type="button" class="rc-view" (click)="viewReceipt(p.id)">
+                <mat-icon>visibility</mat-icon> Ver
+              </button>
+              @if (canScan()) {
+                <label class="rc-file" [class.disabled]="uploading() === p.id">
+                  <input type="file" accept="image/png,image/jpeg,application/pdf" hidden [disabled]="uploading() === p.id" (change)="onFileSelected($event, p.id)" />
+                  Reemplazar
+                </label>
+              }
+            } @else if (receiptFor(p.id) === null && canScan()) {
+              <label class="rc-file primary" [class.disabled]="uploading() === p.id">
+                <input type="file" accept="image/png,image/jpeg,application/pdf" hidden [disabled]="uploading() === p.id" (change)="onFileSelected($event, p.id)" />
+                @if (uploading() === p.id) {
+                  <mat-spinner diameter="16" /> Procesando…
+                } @else {
+                  <mat-icon>document_scanner</mat-icon> Escanear comprobante
+                }
+              </label>
+            }
+          </div>
         </li>
       }
     </ul>

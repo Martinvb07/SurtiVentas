@@ -9,6 +9,7 @@ import {
   Invoice,
   InvoiceLineReview,
   InvoiceStatus,
+  PaymentReceipt,
   RegisterPaymentRequest,
 } from './models/invoice.model';
 
@@ -55,5 +56,24 @@ export class BillingService {
 
   registerPayment(id: number, request: RegisterPaymentRequest): Observable<Invoice> {
     return this.http.post<Invoice>(`${this.baseUrl}/${id}/payments`, request);
+  }
+
+  // ---- Payment-receipt OCR + reconciliation ----
+
+  /** The attached receipt, or null (204) when none has been scanned yet. */
+  getReceipt(paymentId: number): Observable<PaymentReceipt | null> {
+    return this.http.get<PaymentReceipt | null>(`${environment.apiUrl}/payments/${paymentId}/receipt`);
+  }
+
+  /** Scans (OCRs) and attaches the payment receipt, returning the reconciliation. */
+  uploadReceipt(paymentId: number, file: File): Observable<PaymentReceipt> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<PaymentReceipt>(`${environment.apiUrl}/payments/${paymentId}/receipt`, formData);
+  }
+
+  /** The original scanned file, as a Blob (fetched with the auth header). */
+  getReceiptFile(paymentId: number): Observable<Blob> {
+    return this.http.get(`${environment.apiUrl}/payments/${paymentId}/receipt/file`, { responseType: 'blob' });
   }
 }
