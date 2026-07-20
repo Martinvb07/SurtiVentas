@@ -205,6 +205,12 @@ export const NAV_SECTIONS: NavSection[] = [
             route: '/app/purchase-orders',
             roles: [Role.ADMINISTRADOR, Role.FACTURADOR, Role.BODEGUERO],
           },
+          {
+            label: 'Compras sugeridas',
+            icon: 'auto_awesome',
+            route: '/app/replenishment',
+            roles: [Role.ADMINISTRADOR, Role.FACTURADOR],
+          },
         ],
       },
     ],

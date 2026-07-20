@@ -1,0 +1,97 @@
+<div class="suggestions-page">
+  <div class="header">
+    <h1>Compras sugeridas</h1>
+    <p class="subtitle">Reabastecimiento automático de los productos en stock mínimo, agrupado por proveedor.</p>
+  </div>
+
+  @if (loading()) {
+    <div class="loading"><mat-spinner diameter="28" /></div>
+  } @else if (groups().length === 0) {
+    <div class="empty">
+      <mat-icon>check_circle</mat-icon>
+      <span>No hay productos por reabastecer: todo el inventario está por encima del mínimo.</span>
+    </div>
+  } @else {
+    @for (group of groups(); track group.supplierId) {
+      <div class="supplier-card" [class.no-supplier]="group.supplierId == null">
+        <div class="supplier-head">
+          <div class="supplier-name">
+            <mat-icon>{{ group.supplierId == null ? 'report_problem' : 'local_shipping' }}</mat-icon>
+            {{ group.supplierName }}
+          </div>
+          @if (group.supplierId != null) {
+            <button
+              mat-flat-button
+              class="generate-btn"
+              [disabled]="generating() === group.supplierId"
+              (click)="generate(group)"
+            >
+              @if (generating() === group.supplierId) {
+                <mat-spinner diameter="18" />
+              } @else {
+                <mat-icon>add_shopping_cart</mat-icon>
+              }
+              Generar orden de compra
+            </button>
+          }
+        </div>
+
+        @if (group.supplierId == null) {
+          <p class="no-supplier-hint">
+            Estos productos no tienen proveedor registrado. Regístralo en Proveedores para poder generar su orden.
+          </p>
+        }
+
+        <div class="table-scroll">
+          <table class="items">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th class="num">Stock</th>
+                <th class="num">Mín.</th>
+                <th class="num">Vendido 30d</th>
+                <th class="num">Sugerido</th>
+                <th class="num">Costo unit.</th>
+                <th class="num">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of group.items; track item.productId) {
+                <tr>
+                  <td>
+                    <div class="p-name">{{ item.name }}</div>
+                    <div class="p-sku">{{ item.sku }}</div>
+                  </td>
+                  <td class="num low">{{ item.stock }}</td>
+                  <td class="num">{{ item.minStock }}</td>
+                  <td class="num">{{ item.demand30 }}</td>
+                  <td class="num">
+                    @if (group.supplierId != null) {
+                      <input type="number" min="1" class="qty-input" [(ngModel)]="item.suggestedQty" />
+                    } @else {
+                      {{ item.suggestedQty }}
+                    }
+                  </td>
+                  <td class="num">
+                    {{ item.unitCost != null ? (item.unitCost | currency: 'COP' : 'symbol-narrow' : '1.0-0') : '—' }}
+                  </td>
+                  <td class="num">
+                    {{ item.unitCost != null ? (lineSubtotal(item) | currency: 'COP' : 'symbol-narrow' : '1.0-0') : '—' }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+            @if (group.supplierId != null) {
+              <tfoot>
+                <tr>
+                  <td colspan="6" class="total-label">Total estimado</td>
+                  <td class="num total-value">{{ groupTotal(group) | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</td>
+                </tr>
+              </tfoot>
+            }
+          </table>
+        </div>
+      </div>
+    }
+  }
+</div>
