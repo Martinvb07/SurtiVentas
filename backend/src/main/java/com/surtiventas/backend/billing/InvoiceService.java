@@ -143,11 +143,20 @@ public class InvoiceService {
         invoice.setStatus(fullyPaid ? InvoiceStatus.PAGADA : InvoiceStatus.PARCIAL);
         invoiceRepository.save(invoice);
 
+        // The order's payment states start once it has been delivered
+        // (ENTREGADO -> PAGADO/CARTERA_PENDIENTE, CARTERA_PENDIENTE -> PAGADO). A
+        // payment taken earlier — while the order is still moving through the
+        // logistics flow (FACTURADO, alistamiento, ruta) — is recorded against
+        // the invoice without pulling the order out of that flow; the invoice
+        // status (PARCIAL/PAGADA) already reflects it.
         Order order = invoice.getOrder();
-        if (fullyPaid) {
-            orderService.transition(order.getId(), OrderStatus.PAGADO, "Factura pagada", null, actingUser);
-        } else if (order.getStatus() == OrderStatus.FACTURADO) {
-            orderService.transition(order.getId(), OrderStatus.CARTERA_PENDIENTE, "Abono parcial registrado", null, actingUser);
+        OrderStatus current = order.getStatus();
+        if (current == OrderStatus.ENTREGADO || current == OrderStatus.CARTERA_PENDIENTE) {
+            if (fullyPaid) {
+                orderService.transition(order.getId(), OrderStatus.PAGADO, "Factura pagada", null, actingUser);
+            } else if (current == OrderStatus.ENTREGADO) {
+                orderService.transition(order.getId(), OrderStatus.CARTERA_PENDIENTE, "Abono parcial registrado", null, actingUser);
+            }
         }
 
         return findDetail(invoiceId);
